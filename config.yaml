@@ -1,0 +1,16 @@
+db:
+  dsn: dev:dev123456@tcp(192.168.188.233:3306)/loan?charset=utf8mb4&parseTime=True&loc=UTC
+leo:
+  rpc: https://localhost:8000/
+  holder: aleoxxxx
+bsc:
+  rpc: https://aaaa
+  usdt: 0x888
+  lp: 0x98
+  income: 0x99
+  loan_contract: 0x999
+service:
+  port: 8899
+job:
+  aleo_price: "* * *"
+  income: "* * * * *"
