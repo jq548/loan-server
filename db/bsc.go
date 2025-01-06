@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-func (m *MyDb) GetBscBlockHeight(cacheKey string) (int64, error) {
+func (m *MyDb) GetBscBlockHeight() (int64, error) {
 
 	cache, err := m.FindCacheByKey(consts.BscBlockHeightKey)
 	if err != nil {
