@@ -13,7 +13,7 @@ func (myRouter *Router) loadLeoRouters(engine *gin.Engine) {
 	engine.GET("/leo/loan_list", leoLoanList(myRouter))
 }
 
-// 配置信息，参数等
+// loanConfig
 func loanConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -21,7 +21,7 @@ func loanConfig(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 根据aleo计算发放usdt数量
+// calculateUsdt
 func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -29,7 +29,7 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 保存抵押（发起支付前）
+// saveDeposit
 func saveDeposit(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -37,7 +37,7 @@ func saveDeposit(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 保存抵押（发起支付后）
+// completeDeposit
 func completeDeposit(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -45,7 +45,7 @@ func completeDeposit(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 查询抵押
+// leoLoanList
 func leoLoanList(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")

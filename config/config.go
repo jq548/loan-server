@@ -18,16 +18,16 @@ type Db struct {
 }
 
 type Leo struct {
-	Rpc    string `yaml:"rpc"`    // aleo链上的rpc
-	Holder string `yaml:"holder"` // aleo链上保存代币的账户私钥
+	Rpc    string `yaml:"rpc"`    // rpc of aleo
+	Holder string `yaml:"holder"` // holder of aleo
 }
 
 type Bsc struct {
-	Rpc          string `yaml:"rpc"`           // RPC地址
-	Usdt         string `yaml:"usdt"`          // USDT代币合约地址
-	Lp           string `yaml:"lp"`            // LP代币合约地址
-	Income       string `yaml:"income"`        // 收益代币合约地址
-	LoanContract string `yaml:"loan_contract"` // 合约地址
+	Rpc          string `yaml:"rpc"`           // RPC
+	Usdt         string `yaml:"usdt"`          // USDT coin contract
+	Lp           string `yaml:"lp"`            // LP coin contract
+	Income       string `yaml:"income"`        // Income coin contract
+	LoanContract string `yaml:"loan_contract"` // main contract
 }
 
 type Service struct {

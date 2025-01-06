@@ -12,7 +12,7 @@ func (myRouter *Router) loadBscRouters(engine *gin.Engine) {
 	engine.GET("/bsc/loan_list", bscLoanList(myRouter))
 }
 
-// 配置信息，参数等
+// config of program
 func bscConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -20,7 +20,7 @@ func bscConfig(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 流动性资金提供记录
+// provideRecord
 func provideRecord(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -28,7 +28,7 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 流动性资金收益记录
+// provideIncome
 func provideIncome(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -36,7 +36,7 @@ func provideIncome(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 查询我的代款
+// bscLoanList
 func bscLoanList(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")

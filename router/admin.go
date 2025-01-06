@@ -13,7 +13,7 @@ func (myRouter *Router) loadAdminRouters(engine *gin.Engine) {
 	engine.POST("/baked/save_config", saveConfig(myRouter))
 }
 
-// 配置信息，参数等
+// admin login
 func login(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -21,7 +21,7 @@ func login(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 修改密码
+// change admin password
 func changePassword(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -29,7 +29,7 @@ func changePassword(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 添加管理账号
+// add admin account
 func addAccount(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -37,7 +37,7 @@ func addAccount(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 查询配置参数
+// get config
 func getConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
@@ -45,7 +45,7 @@ func getConfig(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// 保存配置参数
+// save config
 func saveConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
