@@ -6,22 +6,38 @@ import (
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"loan-server/common/consts"
+	errors2 "loan-server/common/errors"
 	"loan-server/model"
 	"strconv"
 	"time"
 )
 
-func (m *MyDb) GetLeoBlockHeight() (int64, error) {
+func (m *MyDb) GetLeoBlockHeight() (int, error) {
 
 	cache, err := m.FindCacheByKey(consts.LeoBlockHeightKey)
 	if err != nil {
 		return 0, err
 	}
-	blockNum, err := strconv.ParseInt(cache.CacheValue, 10, 64)
+	blockNum, err := strconv.Atoi(cache.CacheValue)
 	if err != nil {
 		return 0, err
 	}
 	return blockNum, nil
+}
+
+func (m *MyDb) SaveLeoBlockHeight(height int) error {
+	cache := &model.Cache{
+		CacheKey:   consts.LeoBlockHeightKey,
+		CacheValue: strconv.Itoa(height),
+	}
+	res, err := m.UpdateCache(m.Db, cache)
+	if err != nil {
+		return err
+	}
+	if !res {
+		return errors2.New(errors2.SystemError)
+	}
+	return nil
 }
 
 func (m *MyDb) NewLoan(

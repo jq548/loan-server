@@ -18,7 +18,8 @@ type Db struct {
 }
 
 type Leo struct {
-	Rpc    string `yaml:"rpc"`    // rpc of aleo
+	Rpc    string `yaml:"rpc"` // rpc of aleo
+	Net    string `yaml:"net"`
 	Holder string `yaml:"holder"` // holder of aleo
 }
 

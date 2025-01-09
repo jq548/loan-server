@@ -1,8 +1,9 @@
 db:
   dsn: dev:dev123456@tcp(192.168.188.233:3306)/loan?charset=utf8mb4&parseTime=True&loc=UTC
 leo:
-  rpc: https://localhost:8000/
-  holder: aleoxxxx
+  rpc: https://api.explorer.provable.com/v1
+  net: testnet
+  holder: aleo14s8rn8km6uqwatevtk9qyf6vut0vuce398ghklqggmvrfskr7cxsrx5p7a
 bsc:
   rpc: https://aaaa
   usdt: 0x888
