@@ -12,6 +12,15 @@ import (
 	"time"
 )
 
+func (m *MyDb) GetConfig() (model.LoanConfig, error) {
+	var config model.LoanConfig
+	tx := m.Db.Find(&config)
+	if tx.Error != nil {
+		return config, tx.Error
+	}
+	return config, nil
+}
+
 func (m *MyDb) GetLeoBlockHeight() (int, error) {
 
 	cache, err := m.FindCacheByKey(consts.LeoBlockHeightKey)
@@ -40,83 +49,93 @@ func (m *MyDb) SaveLeoBlockHeight(height int) error {
 	return nil
 }
 
-func (m *MyDb) NewLoan(
-	aleoAddress,
-	bscAddress,
-	email string,
-	stages,
-	dayPerStage,
-	type_ int,
-	startAt time.Time,
-	rate,
-	releaseRate float32) error {
+//func (m *MyDb) NewLoan(
+//	aleoAddress,
+//	bscAddress,
+//	email string,
+//	stages,
+//	dayPerStage,
+//	type_ int,
+//	startAt time.Time,
+//	rate,
+//	releaseRate float32) error {
+//	loan := &model.Loan{
+//		AleoAddress: aleoAddress,
+//		BscAddress:  bscAddress,
+//		Status:      0,
+//		Stages:      stages,
+//		PayStages:   0,
+//		DayPerStage: dayPerStage,
+//		StartAt:     startAt,
+//		Health:      decimal.NewFromInt(1),
+//		Rate:        decimal.NewFromFloat32(rate),
+//		ReleaseRate: decimal.NewFromFloat32(releaseRate),
+//		Hash:        "",
+//		Type:        type_,
+//		Email:       email,
+//	}
+//	tx := m.Db.Create(&loan)
+//	if tx.Error != nil {
+//		return tx.Error
+//	}
+//	return nil
+//}
+
+func (m *MyDb) NewDeposit(
+	aleoAddress, bscAddress, email string,
+	aleoAmount int64,
+	stages, dayPerStage int) error {
 	loan := &model.Loan{
 		AleoAddress: aleoAddress,
 		BscAddress:  bscAddress,
 		Status:      0,
-		Stages:      stages,
-		PayStages:   0,
-		DayPerStage: dayPerStage,
-		StartAt:     startAt,
-		Health:      decimal.NewFromInt(1),
-		Rate:        decimal.NewFromFloat32(rate),
-		ReleaseRate: decimal.NewFromFloat32(releaseRate),
-		Hash:        "",
-		Type:        type_,
+		StartAt:     time.Now(),
 		Email:       email,
+		Stages:      stages,
+		DayPerStage: dayPerStage,
 	}
 	tx := m.Db.Create(&loan)
 	if tx.Error != nil {
 		return tx.Error
 	}
-	return nil
-}
 
-func (m *MyDb) NewDeposit(
-	aleoAddress string,
-	loanId int,
-	aleoAmount,
-	aleoPrice,
-	usdtValue decimal.Decimal,
-	at time.Time) error {
 	deposit := &model.Deposit{
-		LoanId:      uint(loanId),
+		LoanId:      loan.ID,
 		AleoAddress: aleoAddress,
-		AleoAmount:  aleoAmount,
-		AleoPrice:   aleoPrice,
-		UsdtValue:   usdtValue,
-		At:          at,
+		AleoAmount:  decimal.NewFromInt(aleoAmount),
 		Status:      0,
+		At:          time.Now(),
 	}
-	tx := m.Db.Create(&deposit)
+	tx = m.Db.Create(&deposit)
 	if tx.Error != nil {
 		return tx.Error
 	}
 	return nil
 }
 
-func (m *MyDb) SaveLoanHash(
-	aleoAddress, hash string) error {
-	var loan model.Loan
-	tx := m.Db.Where(&model.Loan{
-		AleoAddress: aleoAddress,
-	}).Order("created_at desc").First(&loan)
-	if tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return gorm.ErrRecordNotFound
-		}
-	}
-	loan.Hash = hash
-	loan.Status = 1
-	tx = m.Db.Save(&loan)
-	if tx.Error != nil {
-		return tx.Error
-	}
-	return nil
-}
+//func (m *MyDb) SaveLoanHash(
+//	aleoAddress, hash string) error {
+//	var loan model.Loan
+//	tx := m.Db.Where(&model.Loan{
+//		AleoAddress: aleoAddress,
+//		Status: 0,
+//	}).Order("created_at desc").First(&loan)
+//	if tx.Error != nil {
+//		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+//			return gorm.ErrRecordNotFound
+//		}
+//	}
+//	loan.Hash = hash
+//	loan.Status = 1
+//	tx = m.Db.Save(&loan)
+//	if tx.Error != nil {
+//		return tx.Error
+//	}
+//	return nil
+//}
 
 func (m *MyDb) SaveDepositHash(
-	aleoAddress, hash string) error {
+	aleoAddress, hash string, at int) error {
 	var deposit model.Deposit
 	tx := m.Db.Where(&model.Deposit{
 		AleoAddress: aleoAddress,
@@ -128,9 +147,22 @@ func (m *MyDb) SaveDepositHash(
 	}
 	deposit.Hash = hash
 	deposit.Status = 1
+	deposit.At = time.Unix(int64(at), 0)
 	tx = m.Db.Save(&deposit)
 	if tx.Error != nil {
 		return tx.Error
+	}
+	var loan model.Loan
+	tx = m.Db.Where(&gorm.Model{
+		ID: deposit.LoanId,
+	}).Find(&loan)
+	if loan.Status == 0 {
+		loan.Status = 1
+		loan.StartAt = time.Unix(int64(at), 0)
+		tx = m.Db.Save(&loan)
+		if tx.Error != nil {
+			return tx.Error
+		}
 	}
 	return nil
 }
@@ -146,6 +178,22 @@ func (m *MyDb) SelectLoan(
 		}
 	}
 	return loan, nil
+}
+
+func (m *MyDb) SelectUnConfirmDepositByAddress(
+	aleoAddress string, amount int64) ([]model.Deposit, error) {
+	var deposits []model.Deposit
+	tx := m.Db.Where(&model.Deposit{
+		AleoAddress: aleoAddress,
+		Status:      0,
+		AleoAmount:  decimal.NewFromInt(amount),
+	}).Find(&deposits)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return deposits, nil
+		}
+	}
+	return deposits, nil
 }
 
 func (m *MyDb) SelectDepositByAddress(

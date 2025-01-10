@@ -1,7 +1,6 @@
 package db
 
 import (
-	"github.com/shopspring/decimal"
 	"loan-server/config"
 	"testing"
 	"time"
@@ -17,7 +16,7 @@ func TestMyDb_NewLoan(t *testing.T) {
 }
 
 func TestMyDb_NewDeposit(t *testing.T) {
-	err := database.NewDeposit("aleoAddress1", 4, decimal.NewFromFloat(2.334), decimal.NewFromFloat32(1.2), decimal.NewFromFloat(2.8008), time.Now())
+	err := database.NewDeposit("aleoAddress1", "bscAddress1", 30000)
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,12 +29,12 @@ func TestMyDb_SaveLoanHash(t *testing.T) {
 	}
 }
 
-func TestMyDb_SaveDepositHash(t *testing.T) {
-	err := database.SaveDepositHash("aleoAddress1", "hash")
-	if err != nil {
-		t.Error(err)
-	}
-}
+//func TestMyDb_SaveDepositHash(t *testing.T) {
+//	err := database.SaveDepositHash("aleoAddress1", "hash")
+//	if err != nil {
+//		t.Error(err)
+//	}
+//}
 
 func TestMyDb_SelectLoan(t *testing.T) {
 	loans, err := database.SelectLoan("aleoAddress1")

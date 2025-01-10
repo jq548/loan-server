@@ -2,21 +2,42 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"loan-server/common/errors"
 	"loan-server/common/res"
+	"loan-server/common/utils"
+	"loan-server/model"
+	"strconv"
 )
 
 func (myRouter *Router) loadLeoRouters(engine *gin.Engine) {
 	engine.GET("/leo/config", loanConfig(myRouter))
 	engine.GET("/leo/calculate_usdt", calculateUsdt(myRouter))
 	engine.POST("/leo/save_deposoit", saveDeposit(myRouter))
-	engine.POST("/leo/complete_deposit", completeDeposit(myRouter))
 	engine.GET("/leo/loan_list", leoLoanList(myRouter))
 }
 
 // loanConfig
 func loanConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		success := res.Success("")
+		config, err := myRouter.mydb.GetConfig()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate, _ := config.Rate.BigFloat().Float32()
+		releaseRate, _ := config.ReleaseRate.BigFloat().Float32()
+		price, _ := config.AleoPrice.BigFloat().Float32()
+		resCfg := model.LeoConfig{
+			Rate:           rate,
+			ReleaseRate:    releaseRate,
+			AvailableStage: config.AvailableStages,
+			DayPerStage:    config.DayPerStage,
+			Price:          price,
+			AllowTypes:     "1",
+			Banners:        []string{"", ""},
+			MinAmount:      config.MinLoanAmount,
+			MaxAmount:      config.MaxLoanAmount,
+		}
+		success := res.Success(resCfg)
 		context.JSON(success.Code, success)
 	}
 }
@@ -24,7 +45,21 @@ func loanConfig(myRouter *Router) gin.HandlerFunc {
 // calculateUsdt
 func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		success := res.Success("")
+		as := context.Query("amount")
+		if as == "" {
+			panic(errors.New(errors.ParameterError))
+		}
+		amount, err := strconv.Atoi(as)
+		if err != nil {
+			panic(errors.New(errors.ParameterError))
+		}
+		config, err := myRouter.mydb.GetConfig()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		price, _ := config.AleoPrice.BigFloat().Float64()
+		floatAmount := float64(amount) / 1000000
+		success := res.Success(price * floatAmount)
 		context.JSON(success.Code, success)
 	}
 }
@@ -32,14 +67,42 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 // saveDeposit
 func saveDeposit(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		success := res.Success("")
-		context.JSON(success.Code, success)
-	}
-}
-
-// completeDeposit
-func completeDeposit(myRouter *Router) gin.HandlerFunc {
-	return func(context *gin.Context) {
+		var params model.ReqSaveDeposit
+		if err := context.ShouldBindJSON(&params); err != nil {
+			panic(errors.New(errors.ParameterError))
+		}
+		if !utils.IsValidLeoAddress(params.AleoAddress) {
+			panic(errors.New(errors.ParameterError))
+		}
+		if !utils.IsValidAddress(params.BscAddress) {
+			panic(errors.New(errors.ParameterError))
+		}
+		if !utils.VerifyEmailFormat(params.Email) {
+			panic(errors.New(errors.ParameterError))
+		}
+		config, err := myRouter.mydb.GetConfig()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		if config.DayPerStage != params.DayPerStage {
+			panic(errors.New(errors.ParameterError))
+		}
+		if config.AvailableStages < params.Stages || params.Stages < 0 {
+			panic(errors.New(errors.ParameterError))
+		}
+		if config.MinLoanAmount > params.AleoAmount || config.MaxLoanAmount < params.AleoAmount {
+			panic(errors.New(errors.ParameterError))
+		}
+		err = myRouter.mydb.NewDeposit(
+			params.AleoAddress,
+			params.BscAddress,
+			params.Email,
+			params.AleoAmount,
+			params.Stages,
+			params.DayPerStage)
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
 		success := res.Success("")
 		context.JSON(success.Code, success)
 	}
@@ -48,7 +111,19 @@ func completeDeposit(myRouter *Router) gin.HandlerFunc {
 // leoLoanList
 func leoLoanList(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		success := res.Success("")
+		address := context.Query("address")
+		if address == "" {
+
+			panic(errors.New(errors.ParameterError))
+		}
+		if !utils.IsValidLeoAddress(address) {
+			panic(errors.New(errors.ParameterError))
+		}
+		loan, err := myRouter.mydb.SelectLoan(address)
+		if err != nil {
+			return
+		}
+		success := res.Success(loan)
 		context.JSON(success.Code, success)
 	}
 }

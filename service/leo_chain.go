@@ -18,6 +18,8 @@ import (
 // https://api.explorer.provable.com/v1/testnet/block/height/latest
 // transaction in block
 // https://api.explorer.provable.com/v1/testnet/block/4223631/transactions
+// block info
+// https://api.explorer.provable.com/v1/testnet/block/4249173
 
 type LeoChainService struct {
 	Rpc                  string
@@ -25,6 +27,7 @@ type LeoChainService struct {
 	Db                   *db.MyDb
 	holder               string
 	lastCheckBlockNumber int
+	blockTimeMap         map[int]int
 }
 
 func NewLeoChainService(leo *config.Leo, myDb *db.MyDb) *LeoChainService {
@@ -53,13 +56,8 @@ func (s *LeoChainService) Start() {
 			}
 		}
 		if s.lastCheckBlockNumber > height+5 {
-			transactions, err := s.GetTransactionsInBlock(height + 1)
-			if err != nil {
-				zap.S().Error(err)
-				time.Sleep(1 * time.Second)
-				continue
-			}
-			currentTime, err := s.CalculateTimeForBlock(height + 1)
+			next := height + 1
+			transactions, err := s.GetTransactionsInBlock(next)
 			if err != nil {
 				zap.S().Error(err)
 				time.Sleep(1 * time.Second)
@@ -80,7 +78,7 @@ func (s *LeoChainService) Start() {
 										values := strings.Split(sub1, ",")
 										if len(values) == 3 {
 											if values[1] == s.holder {
-												err = s.SaveBlockTransaction(transition.ID, values[0], values[2], currentTime)
+												err = s.SaveBlockTransaction(transition.ID, values[0], values[2], next)
 												if err != nil {
 													zap.S().Error(err)
 												}
@@ -98,7 +96,7 @@ func (s *LeoChainService) Start() {
 				zap.S().Error(err)
 				continue
 			}
-			err = s.Db.SaveLeoBlockHeight(height + 1)
+			err = s.Db.SaveLeoBlockHeight(next)
 			if err != nil {
 				zap.S().Error(err)
 				continue
@@ -146,9 +144,6 @@ func (s *LeoChainService) GetTransactionsInBlock(blockNumber int) ([]model.LeoTr
 	if err != nil {
 		return nil, err
 	}
-	//var result []map[string]interface{}
-	//err = json.Unmarshal([]byte(res), &result)
-
 	var trans []model.LeoTransaction
 	err = json.Unmarshal([]byte(res), &trans)
 	if err != nil {
@@ -162,10 +157,44 @@ func (s *LeoChainService) SaveBlockTransaction(
 	txId,
 	address,
 	amount string,
-	time time.Time) error {
+	block int) error {
+
+	as := strings.ReplaceAll(amount, "u64", "")
+	parseInt, err := strconv.ParseInt(as, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	deposit, err := s.Db.SelectUnConfirmDepositByAddress(address, parseInt)
+	if err != nil {
+		return err
+	}
+	if len(deposit) > 0 {
+		currentTime, err := s.CalculateTimeForBlock(block)
+		if err != nil {
+			return err
+		}
+		err = s.Db.SaveDepositHash(address, txId, currentTime)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-func (s *LeoChainService) CalculateTimeForBlock(blockNumber int) (time.Time, error) {
-	return time.Now(), nil
+func (s *LeoChainService) CalculateTimeForBlock(blockNumber int) (int, error) {
+	if s.blockTimeMap[blockNumber] == 0 {
+		res, err := s.getRequest(fmt.Sprintf("%s/%s/block/%d", s.Rpc, s.Net, blockNumber))
+		if err != nil {
+			return 0, err
+		}
+		var block model.LeoBlock
+		err = json.Unmarshal([]byte(res), &block)
+		if err != nil {
+			return 0, err
+		}
+		s.blockTimeMap[blockNumber] = block.Header.Metadata.Timestamp
+	}
+	return s.blockTimeMap[blockNumber], nil
 }

@@ -51,6 +51,9 @@ type LoanConfig struct {
 	DayPerStage     int
 	AllowTypes      string
 	BannerIds       string
+	MinLoanAmount   int64
+	MaxLoanAmount   int64
+	AleoPrice       decimal.Decimal
 }
 
 type ImageAssets struct {

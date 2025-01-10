@@ -1,17 +1,17 @@
 package utils
 
 import (
-	"github.com/dlclark/regexp2"
+	"regexp"
 )
 
-func VerifyEmailFormat(email string) (bool, error) {
+func VerifyEmailFormat(email string) bool {
 	pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*`
-	compile := regexp2.MustCompile(pattern, 0)
+	compile := regexp.MustCompile(pattern)
 	return compile.MatchString(email)
 }
 
-func VerifyPasswordFormat(password string) (bool, error) {
+func VerifyPasswordFormat(password string) bool {
 	pattern := `^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]{8, 16}$`
-	compile := regexp2.MustCompile(pattern, 0)
+	compile := regexp.MustCompile(pattern)
 	return compile.MatchString(password)
 }
