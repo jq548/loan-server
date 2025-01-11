@@ -15,19 +15,25 @@ type Cache struct {
 
 type Loan struct {
 	gorm.Model
-	AleoAddress string
-	BscAddress  string
-	Status      int // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared
-	Stages      int
-	PayStages   int
-	DayPerStage int
-	StartAt     time.Time
-	Health      decimal.Decimal
-	Rate        decimal.Decimal
-	ReleaseRate decimal.Decimal
-	Hash        string // first deposit hash
-	Type        int
-	Email       string
+	AleoAddress   string
+	BscAddress    string
+	Status        int // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared
+	Stages        int
+	PayStages     int
+	DayPerStage   int
+	StartAt       int // seconds of time stamp
+	Health        decimal.Decimal
+	Rate          decimal.Decimal
+	ReleaseRate   decimal.Decimal
+	Hash          string // first deposit hash
+	Type          int
+	Email         string
+	ReleaseAt     int
+	ReleaseHash   string
+	ReleaseAmount decimal.Decimal
+	PayBackAt     int
+	PayBackHash   string
+	PayBackAmount decimal.Decimal
 }
 
 // include first and recharge
@@ -39,7 +45,7 @@ type Deposit struct {
 	AleoPrice   decimal.Decimal
 	UsdtValue   decimal.Decimal
 	Hash        string
-	At          time.Time
+	At          int // seconds of time stamp
 	Status      int // 0 save, 1 confirmed
 }
 

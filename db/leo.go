@@ -9,7 +9,6 @@ import (
 	errors2 "loan-server/common/errors"
 	"loan-server/model"
 	"strconv"
-	"time"
 )
 
 func (m *MyDb) GetConfig() (model.LoanConfig, error) {
@@ -89,7 +88,6 @@ func (m *MyDb) NewDeposit(
 		AleoAddress: aleoAddress,
 		BscAddress:  bscAddress,
 		Status:      0,
-		StartAt:     time.Now(),
 		Email:       email,
 		Stages:      stages,
 		DayPerStage: dayPerStage,
@@ -104,7 +102,6 @@ func (m *MyDb) NewDeposit(
 		AleoAddress: aleoAddress,
 		AleoAmount:  decimal.NewFromInt(aleoAmount),
 		Status:      0,
-		At:          time.Now(),
 	}
 	tx = m.Db.Create(&deposit)
 	if tx.Error != nil {
@@ -113,33 +110,14 @@ func (m *MyDb) NewDeposit(
 	return nil
 }
 
-//func (m *MyDb) SaveLoanHash(
-//	aleoAddress, hash string) error {
-//	var loan model.Loan
-//	tx := m.Db.Where(&model.Loan{
-//		AleoAddress: aleoAddress,
-//		Status: 0,
-//	}).Order("created_at desc").First(&loan)
-//	if tx.Error != nil {
-//		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-//			return gorm.ErrRecordNotFound
-//		}
-//	}
-//	loan.Hash = hash
-//	loan.Status = 1
-//	tx = m.Db.Save(&loan)
-//	if tx.Error != nil {
-//		return tx.Error
-//	}
-//	return nil
-//}
-
 func (m *MyDb) SaveDepositHash(
-	aleoAddress, hash string, at int) error {
+	hash string,
+	id uint,
+	at int) error {
 	var deposit model.Deposit
-	tx := m.Db.Where(&model.Deposit{
-		AleoAddress: aleoAddress,
-	}).Order("created_at desc").First(&deposit)
+	var selector = model.Deposit{}
+	selector.ID = id
+	tx := m.Db.Where(&selector).Find(&deposit)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return gorm.ErrRecordNotFound
@@ -147,7 +125,7 @@ func (m *MyDb) SaveDepositHash(
 	}
 	deposit.Hash = hash
 	deposit.Status = 1
-	deposit.At = time.Unix(int64(at), 0)
+	deposit.At = at
 	tx = m.Db.Save(&deposit)
 	if tx.Error != nil {
 		return tx.Error
@@ -158,7 +136,7 @@ func (m *MyDb) SaveDepositHash(
 	}).Find(&loan)
 	if loan.Status == 0 {
 		loan.Status = 1
-		loan.StartAt = time.Unix(int64(at), 0)
+		loan.StartAt = at
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
 			return tx.Error
@@ -220,4 +198,50 @@ func (m *MyDb) SelectDepositByLoanId(
 		}
 	}
 	return deposits, nil
+}
+
+func (m *MyDb) Payback(
+	loanId int,
+	hash string,
+	at int) error {
+	return nil
+}
+
+func (m *MyDb) Clear(
+	loanId int,
+	hash string,
+	at int) error {
+	return nil
+}
+
+func (m *MyDb) IncreaseProviderRewardAmount(
+	amount decimal.Decimal,
+	address string,
+	hash string,
+	at int) error {
+	return nil
+}
+
+func (m *MyDb) ReleaseProviderReward(
+	amount decimal.Decimal,
+	address string,
+	hash string,
+	at int) error {
+	return nil
+}
+
+func (m *MyDb) IncreaseProviderAmount(
+	amount decimal.Decimal,
+	address string,
+	hash string,
+	at int) error {
+	return nil
+}
+
+func (m *MyDb) RetrieveProviderAmount(
+	amount decimal.Decimal,
+	address string,
+	hash string,
+	at int) error {
+	return nil
 }

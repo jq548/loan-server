@@ -9,6 +9,7 @@ func (myRouter *Router) loadBscRouters(engine *gin.Engine) {
 	engine.GET("/bsc/config", bscConfig(myRouter))
 	engine.GET("/bsc/provide_record", provideRecord(myRouter))
 	engine.GET("/bsc/provide_income", provideIncome(myRouter))
+	engine.GET("/bsc/provide_income_withdraw_record", provideIncomeReleaseRecord(myRouter))
 	engine.GET("/bsc/loan_list", bscLoanList(myRouter))
 }
 
@@ -30,6 +31,14 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 
 // provideIncome
 func provideIncome(myRouter *Router) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		success := res.Success("")
+		context.JSON(success.Code, success)
+	}
+}
+
+// provideIncome
+func provideIncomeReleaseRecord(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")
 		context.JSON(success.Code, success)

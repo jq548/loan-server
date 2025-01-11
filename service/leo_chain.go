@@ -47,7 +47,7 @@ func (s *LeoChainService) Start() {
 			zap.S().Error(err)
 			continue
 		}
-		if s.lastCheckBlockNumber == 0 || s.lastCheckBlockNumber < height+5 {
+		if s.lastCheckBlockNumber == 0 || s.lastCheckBlockNumber > height+5 {
 			err := s.GetLatestBlockOnChain()
 			if err != nil {
 				zap.S().Error(err)
@@ -101,6 +101,8 @@ func (s *LeoChainService) Start() {
 				zap.S().Error(err)
 				continue
 			}
+		} else {
+			time.Sleep(3 * time.Second)
 		}
 	}
 }
@@ -170,11 +172,12 @@ func (s *LeoChainService) SaveBlockTransaction(
 		return err
 	}
 	if len(deposit) > 0 {
-		currentTime, err := s.CalculateTimeForBlock(block)
+		currentTime, err := s.ReqTimeForBlock(block)
 		if err != nil {
 			return err
 		}
-		err = s.Db.SaveDepositHash(address, txId, currentTime)
+
+		err = s.Db.SaveDepositHash(txId, deposit[0].ID, currentTime)
 		if err != nil {
 			return err
 		}
@@ -183,7 +186,7 @@ func (s *LeoChainService) SaveBlockTransaction(
 	return nil
 }
 
-func (s *LeoChainService) CalculateTimeForBlock(blockNumber int) (int, error) {
+func (s *LeoChainService) ReqTimeForBlock(blockNumber int) (int, error) {
 	if s.blockTimeMap[blockNumber] == 0 {
 		res, err := s.getRequest(fmt.Sprintf("%s/%s/block/%d", s.Rpc, s.Net, blockNumber))
 		if err != nil {
