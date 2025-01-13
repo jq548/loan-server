@@ -3,10 +3,12 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"loan-server/common/logger"
 	"loan-server/config"
 	"loan-server/db"
 	"loan-server/handler"
 	routers "loan-server/router"
+	"loan-server/service"
 	"log"
 )
 
@@ -16,10 +18,24 @@ func main() {
 		log.Fatal(err)
 	}
 
+	err = logger.Init(cfg.Log.Level)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	myDb, err := db.Init(&cfg.Db)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	ls := service.NewLeoChainService(&cfg.Leo, myDb)
+	go ls.Start()
+
+	bs, err := service.NewBscChainService(&cfg.Bsc, myDb)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go bs.StartFetchEvent()
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)

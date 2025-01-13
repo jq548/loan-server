@@ -26,6 +26,9 @@ func (m *MyDb) GetLeoBlockHeight() (int, error) {
 	if err != nil {
 		return 0, err
 	}
+	if cache.CacheValue == "" {
+		cache.CacheValue = "0"
+	}
 	blockNum, err := strconv.Atoi(cache.CacheValue)
 	if err != nil {
 		return 0, err
@@ -34,11 +37,7 @@ func (m *MyDb) GetLeoBlockHeight() (int, error) {
 }
 
 func (m *MyDb) SaveLeoBlockHeight(height int) error {
-	cache := &model.Cache{
-		CacheKey:   consts.LeoBlockHeightKey,
-		CacheValue: strconv.Itoa(height),
-	}
-	res, err := m.UpdateCache(m.Db, cache)
+	res, err := m.UpdateCache(consts.LeoBlockHeightKey, strconv.Itoa(height))
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,9 @@ func (m *MyDb) SaveLeoBlockHeight(height int) error {
 //}
 
 func (m *MyDb) NewDeposit(
-	aleoAddress, bscAddress, email string,
+	aleoAddress,
+	bscAddress,
+	email string,
 	aleoAmount int64,
 	stages, dayPerStage int) error {
 	loan := &model.Loan{
@@ -112,11 +113,11 @@ func (m *MyDb) NewDeposit(
 
 func (m *MyDb) SaveDepositHash(
 	hash string,
-	id uint,
+	depositDbId uint,
 	at int) error {
 	var deposit model.Deposit
 	var selector = model.Deposit{}
-	selector.ID = id
+	selector.ID = depositDbId
 	tx := m.Db.Where(&selector).Find(&deposit)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -137,6 +138,9 @@ func (m *MyDb) SaveDepositHash(
 	if loan.Status == 0 {
 		loan.Status = 1
 		loan.StartAt = at
+		loan.ReleaseAmount = deposit.UsdtValue
+		loan.ReleaseAt = 0
+		loan.ReleaseHash = ""
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
 			return tx.Error
@@ -200,48 +204,11 @@ func (m *MyDb) SelectDepositByLoanId(
 	return deposits, nil
 }
 
-func (m *MyDb) Payback(
-	loanId int,
+func (m *MyDb) UpdateReleaseAleoBack(
+	loaner,
 	hash string,
-	at int) error {
-	return nil
-}
-
-func (m *MyDb) Clear(
-	loanId int,
-	hash string,
-	at int) error {
-	return nil
-}
-
-func (m *MyDb) IncreaseProviderRewardAmount(
 	amount decimal.Decimal,
-	address string,
-	hash string,
 	at int) error {
-	return nil
-}
 
-func (m *MyDb) ReleaseProviderReward(
-	amount decimal.Decimal,
-	address string,
-	hash string,
-	at int) error {
-	return nil
-}
-
-func (m *MyDb) IncreaseProviderAmount(
-	amount decimal.Decimal,
-	address string,
-	hash string,
-	at int) error {
-	return nil
-}
-
-func (m *MyDb) RetrieveProviderAmount(
-	amount decimal.Decimal,
-	address string,
-	hash string,
-	at int) error {
 	return nil
 }

@@ -3,37 +3,39 @@ package model
 import (
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Cache struct {
 	gorm.Model
 	CacheKey   string `gorm:"unique;not null"`
 	CacheValue string
-	Expired    *time.Time
 }
 
 type Loan struct {
 	gorm.Model
-	AleoAddress   string
-	BscAddress    string
-	Status        int // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared
-	Stages        int
-	PayStages     int
-	DayPerStage   int
-	StartAt       int // seconds of time stamp
-	Health        decimal.Decimal
-	Rate          decimal.Decimal
-	ReleaseRate   decimal.Decimal
-	Hash          string // first deposit hash
-	Type          int
-	Email         string
-	ReleaseAt     int
-	ReleaseHash   string
-	ReleaseAmount decimal.Decimal
-	PayBackAt     int
-	PayBackHash   string
-	PayBackAmount decimal.Decimal
+	AleoAddress       string          //
+	BscAddress        string          //
+	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared
+	Stages            int             //
+	PayStages         int             //
+	DayPerStage       int             //
+	StartAt           int             // seconds of time stamp
+	Health            decimal.Decimal // health of loan
+	Rate              decimal.Decimal //
+	ReleaseRate       decimal.Decimal // usdt rate
+	Hash              string          // first deposit hash on aleo
+	Type              int             // 1
+	Email             string          //
+	BscLoanId         int             // loan id of contract
+	ReleaseAt         int             // loan create(release usdt) time
+	ReleaseHash       string          // loan create(release usdt) hash
+	ReleaseAmount     decimal.Decimal // release usdt amount
+	PayBackAt         int             // pay back time
+	PayBackHash       string          // pay back hash
+	PayBackAmount     decimal.Decimal // pay back usdt amount
+	ReleaseAleoHash   string          // pay back release aleo hash
+	ReleaseAleoAt     int             // pay back release aleo time
+	ReleaseAleoAmount decimal.Decimal // pay back release aleo amount
 }
 
 // include first and recharge
@@ -67,12 +69,28 @@ type ImageAssets struct {
 	Url string
 }
 
-//// pay rate and pay back (usdt)
-//type PayBack struct {
-//	gorm.Model
-//	Amount   decimal.Decimal
-//	Stage    int
-//	Hash     string
-//	OnlyRate int
-//	At       time.Time
-//}
+type ProvideRecord struct {
+	gorm.Model
+	Type     int // 0 increase, 1 retrieve
+	Provider string
+	Amount   decimal.Decimal
+	Hash     string
+	At       int
+}
+
+type ProvideRewardRecord struct {
+	gorm.Model
+	Type     int // 0 increase, 1 withdraw
+	Provider string
+	Amount   decimal.Decimal
+	Hash     string
+	At       int
+}
+
+type ActionRecord struct {
+	gorm.Model
+	Type       int    // 0 create loan on bsc, 1 clear loan (bsc), 2 clear loan (sold aleo), 3 release aleo back, 4 update reward
+	Parameters string // json
+	Status     int    // 0 created, 1 processing, 2 complete, 3 failed
+	Hash       string // hash of transaction
+}

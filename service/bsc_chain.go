@@ -37,6 +37,7 @@ func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error
 		UsdtContractAddress: bsc.Usdt,
 		LPContractAddress:   bsc.Lp,
 		EthClient:           client,
+		blockTimeMap:        make(map[int]int),
 	}, nil
 }
 
@@ -48,7 +49,7 @@ func (s *BscChainService) StartFetchEvent() {
 			time.Sleep(1 * time.Second)
 			continue
 		}
-		if s.lastCheckBlockNumber == 0 || s.lastCheckBlockNumber > height+5 {
+		if s.lastCheckBlockNumber == 0 || s.lastCheckBlockNumber < height+10 {
 			err := s.GetLatestBlockOnChain()
 			if err != nil {
 				zap.S().Error(err)
@@ -61,7 +62,16 @@ func (s *BscChainService) StartFetchEvent() {
 			if blocks > 100 {
 				blocks = 100
 			}
-
+			err := s.FilterLogs(height, blocks+height-1)
+			if err != nil {
+				zap.S().Error(err)
+				continue
+			}
+			err = s.Db.SaveBscBlockHeight(int(blocks + height))
+			if err != nil {
+				zap.S().Error(err)
+				continue
+			}
 		} else {
 			time.Sleep(3 * time.Second)
 		}
@@ -90,7 +100,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 	if err != nil {
 		return err
 	}
-	zap.S().Infof("Filtered Logs from:%v to:%v", filterQuery.FromBlock, filterQuery.ToBlock)
+	zap.S().Infof("Filtered BSC Logs from:%v to:%v", filterQuery.FromBlock, filterQuery.ToBlock)
 	filterer, err := contract.NewContractFilterer(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
@@ -107,16 +117,18 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-				address, err := s.Db.SelectUnConfirmDepositByAddress(params.Loaner.Hex(), params.Amount.Int64())
+				err = s.Db.SaveDepositOnBscHash(
+					log.TxHash.Hex(),
+					params.Loaner.Hex(),
+					int(params.LoanId.Int64()),
+					int(params.Duration.Int64()),
+					int(params.Start.Int64()),
+					timestamp,
+					decimal.NewFromBigInt(params.Amount, 1))
 				if err != nil {
 					return err
 				}
-				if len(address) > 0 {
-					err := s.Db.SaveDepositHash(log.TxHash.Hex(), address[0].ID, int(params.Start.Int64()))
-					if err != nil {
-						return err
-					}
-				}
+				//TODO calculate income of providers
 			case "0x38dcb8e7ce8c7f182d53142ee0fa94a1778cd54eddcc1209f86469e7d3b48733":
 				params, err := filterer.ParseEventPayBack(log)
 				if err != nil {
@@ -125,10 +137,12 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				err = s.Db.Payback(
 					int(params.LoanId.Int64()),
 					log.TxHash.Hex(),
-					timestamp)
+					timestamp,
+					decimal.NewFromBigInt(params.Amount, 1))
 				if err != nil {
 					return err
 				}
+				//TODO transfer aleo back
 			case "0x5a322d6a1b1ff3f692c4c5995ba8133271b684bd011bc8e2f711d50db23bfe03":
 				params, err := filterer.ParseEventClear(log)
 				if err != nil {
@@ -137,7 +151,8 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				err = s.Db.Clear(
 					int(params.LoanId.Int64()),
 					log.TxHash.Hex(),
-					timestamp)
+					timestamp,
+					decimal.NewFromBigInt(params.Amount, 1))
 				if err != nil {
 					return err
 				}

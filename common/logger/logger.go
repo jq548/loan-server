@@ -8,10 +8,10 @@ import (
 )
 
 // Init init logger
-func Init() (err error) {
+func Init(logLevel string) (err error) {
 	// Defines a log level type pointer
 	var level = new(zapcore.Level)
-	err = level.UnmarshalText([]byte("debug"))
+	err = level.UnmarshalText([]byte(logLevel))
 	if err != nil {
 		return
 	}

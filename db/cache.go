@@ -12,31 +12,35 @@ func (m *MyDb) FindCacheByKey(cacheKey string) (*model.Cache, error) {
 	tx := m.Db.Where(&model.Cache{CacheKey: cacheKey}).First(&cache)
 	if tx.Error != nil {
 		if errors2.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
+			_, err := m.AddCache(cacheKey, "")
+			return nil, err
 		}
 		return nil, tx.Error
 	}
 	return &cache, nil
 }
 
-func (m *MyDb) AddCache(tx *gorm.DB, cache *model.Cache) (bool, error) {
-	if cacheByKey, err := m.FindCacheByKey(cache.CacheKey); err != nil {
-		return false, err
-	} else {
-		if cacheByKey != nil {
-			return false, errors.New(errors.ParameterError)
-		}
-	}
-
-	tx = tx.Create(&cache)
+func (m *MyDb) AddCache(cacheKey string, cacheValue string) (bool, error) {
+	cache := model.Cache{}
+	tx := m.Db.Where(&model.Cache{CacheKey: cacheKey}).First(&cache)
 	if tx.Error != nil {
+		if errors2.Is(tx.Error, gorm.ErrRecordNotFound) {
+			tx = m.Db.Create(&model.Cache{
+				CacheKey:   cacheKey,
+				CacheValue: cacheValue,
+			})
+			if tx.Error != nil {
+				return false, tx.Error
+			}
+			return true, nil
+		}
 		return false, tx.Error
 	}
-	return true, nil
+	return false, nil
 }
 
-func (m *MyDb) UpdateCache(tx *gorm.DB, cache *model.Cache) (bool, error) {
-	if cacheByKey, err := m.FindCacheByKey(cache.CacheKey); err != nil {
+func (m *MyDb) UpdateCache(cacheKey string, cacheValue string) (bool, error) {
+	if cacheByKey, err := m.FindCacheByKey(cacheKey); err != nil {
 		return false, err
 	} else {
 		if cacheByKey == nil {
@@ -44,9 +48,10 @@ func (m *MyDb) UpdateCache(tx *gorm.DB, cache *model.Cache) (bool, error) {
 		}
 	}
 
-	tx = tx.Model(cache).Updates(map[string]interface{}{
-		"cache_value": cache.CacheValue,
-		"expired":     cache.Expired,
+	tx := m.Db.Where(&model.Cache{
+		CacheKey: cacheKey,
+	}).Updates(model.Cache{
+		CacheValue: cacheValue,
 	})
 	if tx.Error != nil {
 		return false, tx.Error

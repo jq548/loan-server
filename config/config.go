@@ -11,6 +11,7 @@ type Config struct {
 	Bsc     Bsc     `yaml:"bsc"`
 	Service Service `yaml:"service"`
 	Job     Job     `yaml:"job"`
+	Log     Log     `yaml:"log"`
 }
 
 type Db struct {
@@ -25,6 +26,7 @@ type Leo struct {
 
 type Bsc struct {
 	Rpc          string `yaml:"rpc"`           // RPC
+	ChainId      string `yaml:"chain_id"`      //
 	Usdt         string `yaml:"usdt"`          // USDT coin contract
 	Lp           string `yaml:"lp"`            // LP coin contract
 	Income       string `yaml:"income"`        // Income coin contract
@@ -38,6 +40,10 @@ type Service struct {
 type Job struct {
 	AleoPrice string `yaml:"aleo_price"`
 	Income    string `yaml:"income"`
+}
+
+type Log struct {
+	Level string `yaml:"level"`
 }
 
 func InitConfig() (*Config, error) {
