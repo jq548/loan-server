@@ -31,7 +31,7 @@ var (
 
 // ContractMetaData contains all meta data concerning the Contract contract.
 var ContractMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventClear\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventIncreaseLiquidReward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventNewLoan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventPayBack\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderIncrease\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderRetrieve\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventReleaseLiquidReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"addNewLoan\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"addresses\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"clear\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"exchangeLpUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"extract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"increaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"}],\"name\":\"maxExchangeLpUsdt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"payBack\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"provideUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"releaseAbleLiquidReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"releaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"retrieveUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"setLpContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"}],\"name\":\"setUsdtContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"}],\"name\":\"transferCaller\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"transferOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventClear\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventIncreaseLiquidReward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventNewLoan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventPayBack\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderIncrease\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderRetrieve\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventReleaseLiquidReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"addNewLoan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"addresses\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"clear\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"exchangeLpUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"extract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"increaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"loans\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"status\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"}],\"name\":\"maxExchangeLpUsdt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"payBack\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"provideUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"releaseAbleLiquidReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"releaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"retrieveUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"setLpContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"}],\"name\":\"setUsdtContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"}],\"name\":\"transferCaller\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"transferOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // ContractABI is the input ABI used to generate the binding from.
@@ -211,6 +211,66 @@ func (_Contract *ContractCallerSession) Addresses(arg0 *big.Int) (common.Address
 	return _Contract.Contract.Addresses(&_Contract.CallOpts, arg0)
 }
 
+// Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
+//
+// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
+func (_Contract *ContractCaller) Loans(opts *bind.CallOpts, arg0 *big.Int) (struct {
+	Amount   *big.Int
+	Duration *big.Int
+	Start    *big.Int
+	Status   *big.Int
+	Loaner   common.Address
+}, error) {
+	var out []interface{}
+	err := _Contract.contract.Call(opts, &out, "loans", arg0)
+
+	outstruct := new(struct {
+		Amount   *big.Int
+		Duration *big.Int
+		Start    *big.Int
+		Status   *big.Int
+		Loaner   common.Address
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.Amount = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Duration = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.Start = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.Status = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	outstruct.Loaner = *abi.ConvertType(out[4], new(common.Address)).(*common.Address)
+
+	return *outstruct, err
+
+}
+
+// Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
+//
+// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
+func (_Contract *ContractSession) Loans(arg0 *big.Int) (struct {
+	Amount   *big.Int
+	Duration *big.Int
+	Start    *big.Int
+	Status   *big.Int
+	Loaner   common.Address
+}, error) {
+	return _Contract.Contract.Loans(&_Contract.CallOpts, arg0)
+}
+
+// Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
+//
+// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
+func (_Contract *ContractCallerSession) Loans(arg0 *big.Int) (struct {
+	Amount   *big.Int
+	Duration *big.Int
+	Start    *big.Int
+	Status   *big.Int
+	Loaner   common.Address
+}, error) {
+	return _Contract.Contract.Loans(&_Contract.CallOpts, arg0)
+}
+
 // MaxExchangeLpUsdt is a free data retrieval call binding the contract method 0xca938a62.
 //
 // Solidity: function maxExchangeLpUsdt(bool forward) view returns(uint256)
@@ -273,25 +333,25 @@ func (_Contract *ContractCallerSession) ReleaseAbleLiquidReward(provider common.
 	return _Contract.Contract.ReleaseAbleLiquidReward(&_Contract.CallOpts, provider)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0x1ea210fe.
+// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
 //
-// Solidity: function addNewLoan(uint256 amount, uint256 duration, address loaner) returns(uint256)
-func (_Contract *ContractTransactor) AddNewLoan(opts *bind.TransactOpts, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "addNewLoan", amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
+func (_Contract *ContractTransactor) AddNewLoan(opts *bind.TransactOpts, id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "addNewLoan", id, amount, duration, loaner)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0x1ea210fe.
+// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
 //
-// Solidity: function addNewLoan(uint256 amount, uint256 duration, address loaner) returns(uint256)
-func (_Contract *ContractSession) AddNewLoan(amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
+func (_Contract *ContractSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0x1ea210fe.
+// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
 //
-// Solidity: function addNewLoan(uint256 amount, uint256 duration, address loaner) returns(uint256)
-func (_Contract *ContractTransactorSession) AddNewLoan(amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
+func (_Contract *ContractTransactorSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner)
 }
 
 // Clear is a paid mutator transaction binding the contract method 0xc0fe1af8.
@@ -378,25 +438,25 @@ func (_Contract *ContractTransactorSession) IncreaseLiquidReward(amount *big.Int
 	return _Contract.Contract.IncreaseLiquidReward(&_Contract.TransactOpts, amount, provider)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0xc0c53b8b.
+// Init is a paid mutator transaction binding the contract method 0x06552ff3.
 //
-// Solidity: function initialize(address caller, address usdt, address lp) returns()
-func (_Contract *ContractTransactor) Initialize(opts *bind.TransactOpts, caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "initialize", caller, usdt, lp)
+// Solidity: function init(address owner, address caller, address usdt, address lp) returns()
+func (_Contract *ContractTransactor) Init(opts *bind.TransactOpts, owner common.Address, caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "init", owner, caller, usdt, lp)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0xc0c53b8b.
+// Init is a paid mutator transaction binding the contract method 0x06552ff3.
 //
-// Solidity: function initialize(address caller, address usdt, address lp) returns()
-func (_Contract *ContractSession) Initialize(caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.Initialize(&_Contract.TransactOpts, caller, usdt, lp)
+// Solidity: function init(address owner, address caller, address usdt, address lp) returns()
+func (_Contract *ContractSession) Init(owner common.Address, caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.Init(&_Contract.TransactOpts, owner, caller, usdt, lp)
 }
 
-// Initialize is a paid mutator transaction binding the contract method 0xc0c53b8b.
+// Init is a paid mutator transaction binding the contract method 0x06552ff3.
 //
-// Solidity: function initialize(address caller, address usdt, address lp) returns()
-func (_Contract *ContractTransactorSession) Initialize(caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.Initialize(&_Contract.TransactOpts, caller, usdt, lp)
+// Solidity: function init(address owner, address caller, address usdt, address lp) returns()
+func (_Contract *ContractTransactorSession) Init(owner common.Address, caller common.Address, usdt common.Address, lp common.Address) (*types.Transaction, error) {
+	return _Contract.Contract.Init(&_Contract.TransactOpts, owner, caller, usdt, lp)
 }
 
 // PayBack is a paid mutator transaction binding the contract method 0x7ccc5d35.

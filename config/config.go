@@ -19,9 +19,10 @@ type Db struct {
 }
 
 type Leo struct {
-	Rpc    string `yaml:"rpc"` // rpc of aleo
-	Net    string `yaml:"net"`
-	Holder string `yaml:"holder"` // holder of aleo
+	Rpc      string `yaml:"rpc"` // rpc of aleo
+	Net      string `yaml:"net"`
+	Holder   string `yaml:"holder"` // holder of aleo
+	HolderPK string `yaml:"holder_pk"`
 }
 
 type Bsc struct {
@@ -31,6 +32,7 @@ type Bsc struct {
 	Lp           string `yaml:"lp"`            // LP coin contract
 	Income       string `yaml:"income"`        // Income coin contract
 	LoanContract string `yaml:"loan_contract"` // main contract
+	Caller       string `yaml:"caller"`        // caller
 }
 
 type Service struct {

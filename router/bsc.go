@@ -16,6 +16,7 @@ func (myRouter *Router) loadBscRouters(engine *gin.Engine) {
 // config of program
 func bscConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
+		myRouter.BscService.CheckAddresses()
 		success := res.Success("")
 		context.JSON(success.Code, success)
 	}
@@ -37,7 +38,7 @@ func provideIncome(myRouter *Router) gin.HandlerFunc {
 	}
 }
 
-// provideIncome
+// provideIncomeReleaseRecord
 func provideIncomeReleaseRecord(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		success := res.Success("")

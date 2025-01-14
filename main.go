@@ -29,12 +29,14 @@ func main() {
 	}
 
 	ls := service.NewLeoChainService(&cfg.Leo, myDb)
-	go ls.Start()
 
 	bs, err := service.NewBscChainService(&cfg.Bsc, myDb)
 	if err != nil {
 		log.Fatal(err)
 	}
+	ls.BscService = bs
+	bs.LeoService = ls
+	go ls.Start()
 	go bs.StartFetchEvent()
 
 	ginEngine := gin.Default()
@@ -43,7 +45,7 @@ func main() {
 	ginEngine.NoMethod(handler.HandleNotFound)
 	ginEngine.Use(handler.GinLogger(), handler.GinRecovery(true), handler.Cors())
 	// load routers
-	if router, err := routers.NewRouter(myDb, cfg); err != nil {
+	if router, err := routers.NewRouter(myDb, cfg, ls, bs); err != nil {
 		log.Fatal(err)
 	} else {
 		router.LoadRouters(ginEngine)

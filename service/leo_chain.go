@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	errors2 "errors"
 	"fmt"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
@@ -9,7 +10,9 @@ import (
 	"loan-server/config"
 	"loan-server/db"
 	"loan-server/model"
+	"math/big"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"strings"
 	"time"
@@ -27,7 +30,9 @@ type LeoChainService struct {
 	Net                  string
 	Db                   *db.MyDb
 	holder               string
+	holderPK             string
 	lastCheckBlockNumber int
+	BscService           *BscChainService
 }
 
 func NewLeoChainService(leo *config.Leo, myDb *db.MyDb) *LeoChainService {
@@ -35,6 +40,7 @@ func NewLeoChainService(leo *config.Leo, myDb *db.MyDb) *LeoChainService {
 		Rpc:                  leo.Rpc,
 		Net:                  leo.Net,
 		holder:               leo.Holder,
+		holderPK:             leo.HolderPK,
 		Db:                   myDb,
 		lastCheckBlockNumber: 0,
 	}
@@ -187,12 +193,62 @@ func (s *LeoChainService) SaveBlockTransaction(
 			return err
 		}
 		if len(deposit) > 0 {
-			err = s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime)
+			usdt, err := s.CalculateReleaseUsdt(parseInt)
 			if err != nil {
 				return err
+			}
+			loan, err := s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime, usdt)
+			if err != nil {
+				return err
+			}
+			if loan.Status == 1 && loan.ReleaseHash == "" {
+				err = s.BscService.CreateLoanInContract(
+					big.NewInt(int64(loan.ID)),
+					usdt.BigInt(),
+					big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
+					loan.BscAddress)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}
 
 	return nil
+}
+
+func (s *LeoChainService) PayBackLoan(to, amount string) error {
+	cmd := exec.Command(
+		"node",
+		"/Users/jq/Desktop/aleo-project/index.js",
+		s.Rpc,
+		s.holderPK,
+		to,
+		amount,
+	)
+
+	// 获取命令的输出
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+	if !strings.Contains(string(output), "success") {
+		return errors2.New(string(output))
+	}
+	return nil
+}
+
+func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64) (decimal.Decimal, error) {
+	price, err := s.Db.GetLatestPrice()
+	if err != nil {
+		return decimal.NewFromInt(0), err
+	}
+	rate, err := s.Db.GetLatestRate()
+	if err != nil {
+		return decimal.NewFromInt(0), err
+	}
+
+	usdtAmount := decimal.NewFromInt(aleoAmount).Mul(decimal.NewFromFloat(price * 1000000000000000000)).Mul(decimal.NewFromFloat(1 - rate))
+	return usdtAmount, nil
 }

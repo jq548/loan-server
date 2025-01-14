@@ -3,10 +3,13 @@ package service
 import (
 	"context"
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
+	"loan-server/common/utils"
 	"loan-server/config"
 	"loan-server/contract"
 	"loan-server/db"
@@ -23,6 +26,8 @@ type BscChainService struct {
 	lastCheckBlockNumber int64
 	EthClient            *ethclient.Client
 	blockTimeMap         map[int]int
+	CallerPk             string
+	LeoService           *LeoChainService
 }
 
 func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error) {
@@ -38,6 +43,7 @@ func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error
 		LPContractAddress:   bsc.Lp,
 		EthClient:           client,
 		blockTimeMap:        make(map[int]int),
+		CallerPk:            bsc.Caller,
 	}, nil
 }
 
@@ -86,6 +92,30 @@ func (s *BscChainService) GetLatestBlockOnChain() error {
 	}
 	s.lastCheckBlockNumber = int64(number)
 	return nil
+}
+
+func (s *BscChainService) getCallOpts() *bind.CallOpts {
+	return &bind.CallOpts{
+		Pending:     false,
+		From:        common.Address{},
+		BlockNumber: nil,
+		Context:     nil,
+	}
+}
+
+func (s *BscChainService) getTransactOpts(pk string) (*bind.TransactOpts, error) {
+	privateKey, err := crypto.HexToECDSA(pk)
+	if err != nil {
+		return nil, err
+	}
+	gasPrice, err := s.EthClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	transactor := bind.NewKeyedTransactor(privateKey)
+	transactor.Value = big.NewInt(0)
+	transactor.GasPrice = gasPrice
+	return transactor, nil
 }
 
 func (s *BscChainService) FilterLogs(from, to int64) error {
@@ -236,4 +266,78 @@ func (s *BscChainService) ReqTimeForBlock(from, to, blockNumber int) (int, error
 	}
 	averageForOneBlock := float32(s.blockTimeMap[to]-s.blockTimeMap[from]) / float32(to-from)
 	return s.blockTimeMap[from] + int(averageForOneBlock*float32(blockNumber-from)), nil
+}
+
+func (s *BscChainService) CreateLoanInContract(
+	id,
+	amount,
+	duration *big.Int,
+	loaner string) error {
+	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return err
+	}
+	loan, err := loanContract.Loans(s.getCallOpts(), id)
+	if err != nil {
+		return err
+	}
+	if utils.IsZeroAddress(loan.Loaner) {
+		opts, err := s.getTransactOpts(s.CallerPk)
+		if err != nil {
+			return err
+		}
+		_, err = loanContract.AddNewLoan(opts, id, amount, duration, common.HexToAddress(loaner))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *BscChainService) ClearLoanInContract(loanId *big.Int) error {
+	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return err
+	}
+	opts, err := s.getTransactOpts(s.CallerPk)
+	if err != nil {
+		return err
+	}
+	_, err = loanContract.Clear(opts, loanId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BscChainService) IncreaseLiquidReward(amount *big.Int, provider string) error {
+	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return err
+	}
+	opts, err := s.getTransactOpts(s.CallerPk)
+	if err != nil {
+		return err
+	}
+	_, err = loanContract.IncreaseLiquidReward(opts, amount, common.HexToAddress(provider))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BscChainService) CheckAddresses() error {
+	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return err
+	}
+	res, err := loanContract.Addresses(s.getCallOpts(), big.NewInt(0))
+	if err != nil {
+		return err
+	}
+	zap.S().Info(res.Hex())
+
+	return nil
 }

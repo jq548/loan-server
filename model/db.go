@@ -94,3 +94,15 @@ type ActionRecord struct {
 	Status     int    // 0 created, 1 processing, 2 complete, 3 failed
 	Hash       string // hash of transaction
 }
+
+type LeoPriceRecord struct {
+	gorm.Model
+	Price decimal.Decimal
+	At    int
+}
+
+type LeoRateRecord struct {
+	gorm.Model
+	Rate decimal.Decimal
+	At   int
+}

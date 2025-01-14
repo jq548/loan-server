@@ -114,22 +114,24 @@ func (m *MyDb) NewDeposit(
 func (m *MyDb) SaveDepositHash(
 	hash string,
 	depositDbId uint,
-	at int) error {
+	at int,
+	usdt decimal.Decimal) (*model.Loan, error) {
 	var deposit model.Deposit
 	var selector = model.Deposit{}
 	selector.ID = depositDbId
 	tx := m.Db.Where(&selector).Find(&deposit)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return gorm.ErrRecordNotFound
+			return nil, gorm.ErrRecordNotFound
 		}
 	}
 	deposit.Hash = hash
 	deposit.Status = 1
 	deposit.At = at
+	deposit.UsdtValue = usdt
 	tx = m.Db.Save(&deposit)
 	if tx.Error != nil {
-		return tx.Error
+		return nil, tx.Error
 	}
 	var loan model.Loan
 	tx = m.Db.Where(&gorm.Model{
@@ -138,15 +140,15 @@ func (m *MyDb) SaveDepositHash(
 	if loan.Status == 0 {
 		loan.Status = 1
 		loan.StartAt = at
-		loan.ReleaseAmount = deposit.UsdtValue
+		loan.ReleaseAmount = usdt
 		loan.ReleaseAt = 0
 		loan.ReleaseHash = ""
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
-			return tx.Error
+			return nil, tx.Error
 		}
 	}
-	return nil
+	return &loan, nil
 }
 
 func (m *MyDb) SelectLoan(
@@ -209,6 +211,51 @@ func (m *MyDb) UpdateReleaseAleoBack(
 	hash string,
 	amount decimal.Decimal,
 	at int) error {
-
+	var loan model.Loan
+	tx := m.Db.Where(&model.Loan{
+		Status:      4,
+		PayBackHash: "",
+		AleoAddress: loaner,
+	}).Last(&loan)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	loan.PayBackAt = at
+	loan.PayBackHash = hash
+	loan.PayBackAmount = amount
+	tx = m.Db.Save(&loan)
+	if tx.Error != nil {
+		return tx.Error
+	}
 	return nil
+}
+
+func (m *MyDb) GetLatestPrice() (float64, error) {
+	var record model.LeoPriceRecord
+	tx := m.Db.Last(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return 0, nil
+		}
+	}
+	res, ok := record.Price.Float64()
+	if !ok {
+		return 0, errors2.New(errors2.SystemError)
+	}
+	return res, nil
+}
+
+func (m *MyDb) GetLatestRate() (float64, error) {
+	var record model.LeoRateRecord
+	tx := m.Db.Last(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return 0, nil
+		}
+	}
+	res, ok := record.Rate.Float64()
+	if !ok {
+		return 0, errors2.New(errors2.SystemError)
+	}
+	return res, nil
 }
