@@ -28,6 +28,7 @@ type BscChainService struct {
 	blockTimeMap         map[int]int
 	CallerPk             string
 	LeoService           *LeoChainService
+	ChainId              int
 }
 
 func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error) {
@@ -44,6 +45,7 @@ func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error
 		EthClient:           client,
 		blockTimeMap:        make(map[int]int),
 		CallerPk:            bsc.Caller,
+		ChainId:             bsc.ChainId,
 	}, nil
 }
 
@@ -112,7 +114,10 @@ func (s *BscChainService) getTransactOpts(pk string) (*bind.TransactOpts, error)
 	if err != nil {
 		return nil, err
 	}
-	transactor := bind.NewKeyedTransactor(privateKey)
+	transactor, err := bind.NewKeyedTransactorWithChainID(privateKey, big.NewInt(int64(s.ChainId)))
+	if err != nil {
+		return nil, err
+	}
 	transactor.Value = big.NewInt(0)
 	transactor.GasPrice = gasPrice
 	return transactor, nil

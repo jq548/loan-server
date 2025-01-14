@@ -46,10 +46,9 @@ func (m *MyDb) SaveDepositOnBscHash(
 	at int,
 	amount decimal.Decimal) error {
 	var loan model.Loan
-	tx := m.Db.Where(&model.Loan{
-		ReleaseAmount: amount,
-		BscAddress:    loaner,
-	}).Last(&loan)
+	var selector = model.Loan{}
+	selector.ID = uint(loanId)
+	tx := m.Db.Where(&selector).Last(&loan)
 	if tx.Error != nil {
 		return gorm.ErrRecordNotFound
 	}

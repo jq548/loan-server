@@ -238,10 +238,7 @@ func (m *MyDb) GetLatestPrice() (float64, error) {
 			return 0, nil
 		}
 	}
-	res, ok := record.Price.Float64()
-	if !ok {
-		return 0, errors2.New(errors2.SystemError)
-	}
+	res := record.Price.InexactFloat64()
 	return res, nil
 }
 
@@ -253,9 +250,6 @@ func (m *MyDb) GetLatestRate() (float64, error) {
 			return 0, nil
 		}
 	}
-	res, ok := record.Rate.Float64()
-	if !ok {
-		return 0, errors2.New(errors2.SystemError)
-	}
+	res := record.Rate.InexactFloat64()
 	return res, nil
 }

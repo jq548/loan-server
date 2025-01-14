@@ -27,7 +27,7 @@ type Leo struct {
 
 type Bsc struct {
 	Rpc          string `yaml:"rpc"`           // RPC
-	ChainId      string `yaml:"chain_id"`      //
+	ChainId      int    `yaml:"chain_id"`      //
 	Usdt         string `yaml:"usdt"`          // USDT coin contract
 	Lp           string `yaml:"lp"`            // LP coin contract
 	Income       string `yaml:"income"`        // Income coin contract
