@@ -14,8 +14,6 @@ type LeoBlock struct {
 			Network               int `json:"network"`
 			Round                 int `json:"round"`
 			Height                int `json:"height"`
-			CumulativeWeight      int `json:"cumulative_weight"`
-			CumulativeProofTarget int `json:"cumulative_proof_target"`
 			CoinbaseTarget        int `json:"coinbase_target"`
 			ProofTarget           int `json:"proof_target"`
 			LastCoinbaseTarget    int `json:"last_coinbase_target"`
