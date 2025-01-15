@@ -101,13 +101,15 @@ type LeoBlock struct {
 }
 
 type ReqSaveDeposit struct {
-	AleoAddress string `json:"aleo_address"`
-	AleoAmount  int64  `json:"aleo_amount"`
-	BscAddress  string `json:"bsc_address"`
-	Email       string `json:"email"`
-	Stages      int    `json:"stages"`
-	DayPerStage int    `json:"day_per_stage"`
-	Type        int    `json:"type"`
+	AleoAddress string  `json:"aleo_address"`
+	AleoAmount  float64 `json:"aleo_amount"`
+	BscAddress  string  `json:"bsc_address"`   //
+	Email       string  `json:"email"`         //
+	Stages      int     `json:"stages"`        //
+	DayPerStage int     `json:"day_per_stage"` //
+	LoanType    int     `json:"loan_type"`     // 1 loan , 2 pos
+	Type        int     `json:"type"`          // 0 create, 1 add
+	LoanId      int     `json:"loan_id"`       //
 }
 
 type SaveLoan struct {
