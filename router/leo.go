@@ -24,15 +24,23 @@ func loanConfig(myRouter *Router) gin.HandlerFunc {
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
+		price, err := myRouter.mydb.GetLatestPrice()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate, err := myRouter.mydb.GetLatestRate()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
 		resCfg := model.LeoResConfig{
-			Rate:           config.Rate.String(),
+			Rate:           strconv.FormatFloat(rate, 'f', 6, 64),
 			AvailableStage: config.AvailableStages,
 			DayPerStage:    config.DayPerStage,
-			Price:          config.AleoPrice.String(),
+			Price:          strconv.FormatFloat(price, 'f', 6, 64),
 			AllowTypes:     "1",
-			Banners:        []string{"", ""},
-			MinAmount:      config.MinLoanAmount,
-			MaxAmount:      config.MaxLoanAmount,
+			Banners:        []string{},
+			MinAmount:      config.MinLoanAmount / 1000000,
+			MaxAmount:      config.MaxLoanAmount / 1000000,
 		}
 		success := res.Success(resCfg)
 		context.JSON(success.Code, success)
@@ -83,8 +91,15 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 		if config.DayPerStage != dayPerStage {
 			panic(errors.New(errors.ParameterError))
 		}
-
-		usdt := config.AleoPrice.Mul(decimal.NewFromFloat(amount)).Mul(decimal.NewFromInt(1).Sub(config.Rate))
+		price, err := myRouter.mydb.GetLatestPrice()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate, err := myRouter.mydb.GetLatestRate()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		usdt := decimal.NewFromFloat(price).Mul(decimal.NewFromFloat(amount)).Mul(decimal.NewFromInt(1).Sub(decimal.NewFromFloat(rate)))
 		success := res.Success(map[string]string{
 			"usdt": usdt.String(),
 		})
