@@ -36,8 +36,8 @@ func main() {
 	}
 	ls.BscService = bs
 	bs.LeoService = ls
-	go ls.Start()
-	go bs.StartFetchEvent()
+	//go ls.Start()
+	//go bs.StartFetchEvent()
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)

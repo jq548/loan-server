@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shopspring/decimal"
+	"loan-server/common/consts"
 	"loan-server/common/errors"
 	"loan-server/common/res"
 	"loan-server/common/utils"
@@ -68,29 +69,6 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 			panic(errors.New(errors.ParameterError))
 		}
 
-		stages := context.Query("stage")
-		if stages == "" {
-			panic(errors.New(errors.ParameterError))
-		}
-		stage, err := strconv.Atoi(stages)
-		if err != nil {
-			panic(errors.New(errors.ParameterError))
-		}
-		if config.AvailableStages < stage || stage < 0 {
-			panic(errors.New(errors.ParameterError))
-		}
-
-		dayPerStages := context.Query("day_per_stage")
-		if dayPerStages == "" {
-			panic(errors.New(errors.ParameterError))
-		}
-		dayPerStage, err := strconv.Atoi(dayPerStages)
-		if err != nil {
-			panic(errors.New(errors.ParameterError))
-		}
-		if config.DayPerStage != dayPerStage {
-			panic(errors.New(errors.ParameterError))
-		}
 		price, err := myRouter.mydb.GetLatestPrice()
 		if err != nil {
 			panic(errors.New(errors.SystemError))
@@ -99,10 +77,29 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
-		usdt := decimal.NewFromFloat(price).Mul(decimal.NewFromFloat(amount)).Mul(decimal.NewFromInt(1).Sub(decimal.NewFromFloat(rate)))
-		success := res.Success(map[string]string{
-			"usdt": usdt.String(),
-		})
+
+		collateralAmount := decimal.NewFromFloat(price).Mul(decimal.NewFromFloat(amount))
+		borrowAmount := collateralAmount.Mul(config.ReleaseRate)
+
+		var installments []model.LeoResInstallment
+		for i := 1; i <= config.AvailableStages; i++ {
+			interestRate := decimal.NewFromFloat(rate).Mul(decimal.NewFromInt(int64(i * config.DayPerStage)))
+			installments = append(installments, model.LeoResInstallment{
+				Installments:           i,
+				DayPerInstallment:      config.DayPerStage,
+				InterestRate:           interestRate.String(),
+				InterestPerInstallment: borrowAmount.Mul(interestRate).String(),
+			})
+		}
+		result := model.LeoResCalculateUsdt{
+			BorrowingAmount:  borrowAmount.String(),
+			CollateralAmount: collateralAmount.String(),
+			CollateralRate:   config.ReleaseRate.String(),
+			Installment:      installments,
+		}
+
+		//usdt := .Mul(decimal.NewFromInt(1).Sub(decimal.NewFromFloat(rate)))
+		success := res.Success(result)
 		context.JSON(success.Code, success)
 	}
 }
@@ -193,9 +190,9 @@ func leoLoanList(myRouter *Router) gin.HandlerFunc {
 					ID:          int(d.ID),
 					LoanId:      d.LoanId,
 					AleoAddress: d.AleoAddress,
-					AleoAmount:  d.AleoAmount,
-					AleoPrice:   d.AleoPrice,
-					UsdtValue:   d.UsdtValue,
+					AleoAmount:  d.AleoAmount.String(),
+					AleoPrice:   d.AleoPrice.String(),
+					UsdtValue:   d.UsdtValue.Div(decimal.NewFromInt(consts.Wei)).String(),
 					Hash:        d.Hash,
 					At:          d.At,
 					Status:      d.Status,
@@ -210,21 +207,21 @@ func leoLoanList(myRouter *Router) gin.HandlerFunc {
 				Stages:            loan.Stages,
 				DayPerStage:       loan.DayPerStage,
 				StartAt:           loan.StartAt,
-				Health:            loan.Health,
-				Rate:              loan.Rate,
-				ReleaseRate:       loan.ReleaseRate,
+				Health:            loan.Health.String(),
+				Rate:              loan.Rate.String(),
+				ReleaseRate:       loan.ReleaseRate.String(),
 				Hash:              loan.Hash,
 				Type:              loan.Type,
 				BscLoanId:         loan.BscLoanId,
 				ReleaseAt:         loan.ReleaseAt,
 				ReleaseHash:       loan.ReleaseHash,
-				ReleaseAmount:     loan.ReleaseAmount,
+				ReleaseAmount:     loan.ReleaseAmount.Div(decimal.NewFromInt(consts.Wei)).String(),
 				PayBackAt:         loan.PayBackAt,
 				PayBackHash:       loan.PayBackHash,
-				PayBackAmount:     loan.PayBackAmount,
+				PayBackAmount:     loan.PayBackAmount.String(),
 				ReleaseAleoHash:   loan.ReleaseAleoHash,
 				ReleaseAleoAt:     loan.ReleaseAleoAt,
-				ReleaseAleoAmount: loan.ReleaseAleoAmount,
+				ReleaseAleoAmount: loan.ReleaseAleoAmount.Div(decimal.NewFromInt(consts.Wei)).String(),
 				Deposits:          deposits,
 			})
 		}
