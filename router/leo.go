@@ -85,10 +85,10 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 		for i := 1; i <= config.AvailableStages; i++ {
 			interestRate := decimal.NewFromFloat(rate).Mul(decimal.NewFromInt(int64(i * config.DayPerStage)))
 			installments = append(installments, model.LeoResInstallment{
-				Installments:           i,
-				DayPerInstallment:      config.DayPerStage,
-				InterestRate:           interestRate.String(),
-				InterestPerInstallment: borrowAmount.Mul(interestRate).String(),
+				Installments:        i,
+				DayPerInstallment:   config.DayPerStage,
+				InterestRate:        interestRate.String(),
+				InterestInstallment: borrowAmount.Mul(interestRate).String(),
 			})
 		}
 		result := model.LeoResCalculateUsdt{

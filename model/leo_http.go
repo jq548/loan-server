@@ -59,8 +59,8 @@ type LeoResCalculateUsdt struct {
 }
 
 type LeoResInstallment struct {
-	Installments           int    `json:"installments"`
-	DayPerInstallment      int    `json:"day_per_installment"`
-	InterestRate           string `json:"interest_rate"`
-	InterestPerInstallment string `json:"interest_per_installment"`
+	Installments        int    `json:"installments"`
+	DayPerInstallment   int    `json:"day_per_installment"`
+	InterestRate        string `json:"interest_rate"`
+	InterestInstallment string `json:"interest_installment"`
 }
