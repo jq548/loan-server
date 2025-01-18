@@ -29,12 +29,12 @@ func loanConfig(myRouter *Router) gin.HandlerFunc {
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
-		rate, err := myRouter.mydb.GetLatestRate()
+		rates, err := myRouter.mydb.GetLatestRateOfWeek()
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
 		resCfg := model.LeoResConfig{
-			Rate:           strconv.FormatFloat(rate, 'f', 6, 64),
+			Rate:           rates[0].Rate.String(),
 			AvailableStage: config.AvailableStages,
 			DayPerStage:    config.DayPerStage,
 			Price:          strconv.FormatFloat(price, 'f', 6, 64),
@@ -73,7 +73,7 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
-		rate, err := myRouter.mydb.GetLatestRate()
+		rates, err := myRouter.mydb.GetLatestRateOfWeek()
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
@@ -83,7 +83,14 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 
 		var installments []model.LeoResInstallment
 		for i := 1; i <= config.AvailableStages; i++ {
-			interestRate := decimal.NewFromFloat(rate).Mul(decimal.NewFromInt(int64(i * config.DayPerStage)))
+
+			interestRate := decimal.NewFromInt(0)
+			for _, rate := range rates {
+				if rate.Days == i*config.DayPerStage {
+					interestRate = rate.Rate
+					break
+				}
+			}
 			installments = append(installments, model.LeoResInstallment{
 				Installments:        i,
 				DayPerInstallment:   config.DayPerStage,

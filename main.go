@@ -37,14 +37,14 @@ func main() {
 	}
 	ls.BscService = bs
 	bs.LeoService = ls
-	//go ls.Start()
-	//go bs.StartFetchEvent()
+	go ls.Start()
+	go bs.StartFetchEvent()
 
 	// ---- start job ----
-	myJob := job.NewJob(ls, bs, myDb)
+	myJob := job.NewJob(ls, bs, myDb, cfg.Platform.ReceiveAddress)
 	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartFetchAleoPrice)
-	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartCalculateRate)
-	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartCalculateIncome)
+	myJob.StartJob(cfg.Job.CalculateRate, myJob.StartCalculateRate)
+	myJob.StartJob(cfg.Job.CalculateIncome, myJob.StartCalculateIncome)
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)

@@ -351,3 +351,23 @@ func (s *BscChainService) CheckAddresses() error {
 
 	return nil
 }
+
+func (s *BscChainService) IncreaseIncome(addresses []string, amounts []*big.Int) (string, error) {
+	var providers []common.Address
+	for _, address := range addresses {
+		providers = append(providers, common.HexToAddress(address))
+	}
+	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return "", err
+	}
+	opts, err := s.getTransactOpts(s.CallerPk)
+	if err != nil {
+		return "", err
+	}
+	tx, err := loanContract.IncreaseLiquidRewardBatch(opts, amounts, providers)
+	if err != nil {
+		return "", err
+	}
+	return tx.Hash().Hex(), nil
+}

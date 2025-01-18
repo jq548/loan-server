@@ -117,7 +117,8 @@ func (m *MyDb) SaveDepositHash(
 	hash string,
 	depositDbId uint,
 	at int,
-	usdt decimal.Decimal) (*model.Loan, error) {
+	loanAmount,
+	interestAmount decimal.Decimal) (*model.Loan, error) {
 	var deposit model.Deposit
 	var selector = model.Deposit{}
 	selector.ID = depositDbId
@@ -130,7 +131,7 @@ func (m *MyDb) SaveDepositHash(
 	deposit.Hash = hash
 	deposit.Status = 1
 	deposit.At = at
-	deposit.UsdtValue = usdt
+	deposit.UsdtValue = loanAmount
 	tx = m.Db.Save(&deposit)
 	if tx.Error != nil {
 		return nil, tx.Error
@@ -140,16 +141,13 @@ func (m *MyDb) SaveDepositHash(
 		ID: deposit.LoanId,
 	}).Find(&loan)
 	if loan.Status == 0 {
-		interest, err := m.CalculateInterest(usdt)
-		if err != nil {
-			return nil, err
-		}
 		loan.Status = 1
 		loan.StartAt = at
-		loan.ReleaseAmount = usdt
+		loan.LoanAmount = loanAmount
+		loan.ReleaseAmount = loanAmount.Sub(interestAmount)
 		loan.ReleaseAt = 0
 		loan.ReleaseHash = ""
-		loan.InterestAmount = interest
+		loan.InterestAmount = interestAmount
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
 			return nil, tx.Error
@@ -249,16 +247,16 @@ func (m *MyDb) GetLatestPrice() (float64, error) {
 	return res, nil
 }
 
-func (m *MyDb) GetLatestRate() (float64, error) {
-	var record model.LeoRateRecord
-	tx := m.Db.Last(&record)
+func (m *MyDb) GetLatestRateOfWeek() ([]model.LeoRateRecord, error) {
+	var record []model.LeoRateRecord
+	tx := m.Db.Order("id DESC").Limit(4).Find(&record)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return 0, nil
+			return record, nil
 		}
 	}
-	res := record.Rate.InexactFloat64()
-	return res, nil
+	//res := record.Rate.InexactFloat64()
+	return record, nil
 }
 
 func (m *MyDb) SaveLatestAleoPrice(price float64) error {
@@ -272,17 +270,23 @@ func (m *MyDb) SaveLatestAleoPrice(price float64) error {
 	return nil
 }
 
-func (m *MyDb) SaveLatestRate(price float64) error {
-	tx := m.Db.Create(&model.LeoRateRecord{
-		Rate: decimal.NewFromFloat(price),
-		At:   int(time.Now().Unix()),
-	})
+func (m *MyDb) SaveLatestRate(record model.LeoRateRecord) error {
+	tx := m.Db.Create(&record)
 	if tx.Error != nil {
 		return tx.Error
 	}
 	return nil
 }
 
-func (m *MyDb) CalculateInterest(loanAmount decimal.Decimal) (decimal.Decimal, error) {
-	return decimal.NewFromInt(10), nil
+func (m *MyDb) SelectLoanById(loanId uint) (*model.Loan, error) {
+	var loan model.Loan
+	var selector = &model.Loan{}
+	selector.ID = loanId
+	tx := m.Db.Where(selector).First(&loan)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+	}
+	return &loan, nil
 }

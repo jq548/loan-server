@@ -27,6 +27,7 @@ type Loan struct {
 	Type              int             // 1
 	Email             string          //
 	BscLoanId         int             // loan id of contract
+	LoanAmount        decimal.Decimal // amount of loan
 	ReleaseAt         int             // loan create(release usdt) time
 	ReleaseHash       string          // loan create(release usdt) hash
 	ReleaseAmount     decimal.Decimal // release usdt amount
@@ -112,6 +113,7 @@ type LeoRateRecord struct {
 	gorm.Model
 	Rate decimal.Decimal
 	At   int
+	Days int
 }
 
 type IncomeRecord struct {

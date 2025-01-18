@@ -20,14 +20,6 @@ func TestMyDb_NewDeposit(t *testing.T) {
 	}
 }
 
-func TestMyDb_SaveDepositHash(t *testing.T) {
-	err := database.SaveDepositHash(
-		"hash", 7, 1234)
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestMyDb_SelectLoan(t *testing.T) {
 	loans, err := database.SelectLoan("aleoAddress1")
 	if err != nil {
@@ -50,4 +42,20 @@ func TestMyDb_SelectDepositByLoanId(t *testing.T) {
 		t.Error(err)
 	}
 	println(len(deposits))
+}
+
+func TestMyDb_TotalIncomeLastDay(t *testing.T) {
+	amount, err := database.TotalIncomeLastDay(false)
+	if err != nil {
+		t.Error(err)
+	}
+	println(amount.String())
+}
+
+func TestMyDb_SelectLoanById(t *testing.T) {
+	loan, err := database.SelectLoanById(14)
+	if err != nil {
+		t.Error(err)
+	}
+	println(loan)
 }

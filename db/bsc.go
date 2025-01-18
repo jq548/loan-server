@@ -2,12 +2,14 @@ package db
 
 import (
 	"errors"
+	"fmt"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"loan-server/common/consts"
 	errors2 "loan-server/common/errors"
 	"loan-server/model"
 	"strconv"
+	"time"
 )
 
 func (m *MyDb) GetBscBlockHeight() (int64, error) {
@@ -248,4 +250,89 @@ func (m *MyDb) RetrieveProviderAmount(
 		}
 	}
 	return nil
+}
+
+func (m *MyDb) TotalIncomeLastDay(isPlatform bool) (decimal.Decimal, error) {
+	var result decimal.Decimal
+	config, err := m.GetConfig()
+	if err != nil {
+		return result, err
+	}
+	now := time.Now()
+	beginOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Unix()
+	beginOfYesterday := beginOfToday - 3600*24
+	sqls := fmt.Sprintf("SELECT * from income_record WHERE type=1 AND ((at>%d AND at<%d) OR (end_at>%d AND end_at<%d) OR (at<%d AND end_at>%d))", beginOfYesterday, beginOfToday, beginOfYesterday, beginOfToday, beginOfYesterday, beginOfToday)
+	var interestRecords []model.IncomeRecord
+	tx := m.Db.Raw(sqls).Scan(&interestRecords)
+	if tx.Error != nil {
+		return result, tx.Error
+	}
+	sqls = fmt.Sprintf("SELECT * from income_record WHERE type=4 AND (at>%d AND at<%d)", beginOfYesterday, beginOfToday)
+	var clearRecords []model.IncomeRecord
+	tx = m.Db.Raw(sqls).Scan(&clearRecords)
+	if tx.Error != nil {
+		return result, tx.Error
+	}
+	if isPlatform {
+		sqls = fmt.Sprintf("SELECT * from income_record WHERE type=2 AND (at>%d AND at<%d)", beginOfYesterday, beginOfToday)
+		var providerWithdrawRecords []model.IncomeRecord
+		tx = m.Db.Raw(sqls).Scan(&providerWithdrawRecords)
+		if tx.Error != nil {
+			return result, tx.Error
+		}
+		sqls = fmt.Sprintf("SELECT * from income_record WHERE type=3 AND (at>%d AND at<%d)", beginOfYesterday, beginOfToday)
+		var providerRetrieveRecords []model.IncomeRecord
+		tx = m.Db.Raw(sqls).Scan(&providerRetrieveRecords)
+		if tx.Error != nil {
+			return result, tx.Error
+		}
+		for _, record := range interestRecords {
+			result = result.Add(record.Amount.Mul(config.PlatformIncomeRate).Div(decimal.NewFromInt(int64(record.SplitDays))))
+		}
+		for _, record := range clearRecords {
+			if record.IsNegative == 1 {
+				result = result.Sub(record.Amount.Mul(config.PlatformIncomeRate))
+			} else {
+				result = result.Add(record.Amount.Mul(config.PlatformIncomeRate))
+			}
+
+		}
+		for _, record := range providerWithdrawRecords {
+			result = result.Add(record.Amount)
+		}
+		for _, record := range providerRetrieveRecords {
+			result = result.Add(record.Amount)
+		}
+	} else {
+		for _, record := range interestRecords {
+			result = result.Add(record.Amount.Mul(decimal.NewFromInt(1).Sub(config.PlatformIncomeRate)).Div(decimal.NewFromInt(int64(record.SplitDays))))
+		}
+		for _, record := range clearRecords {
+			if record.IsNegative == 1 {
+				result = result.Sub(record.Amount.Mul(decimal.NewFromInt(1).Sub(config.PlatformIncomeRate)))
+			} else {
+				result = result.Add(record.Amount.Mul(decimal.NewFromInt(1).Sub(config.PlatformIncomeRate)))
+			}
+		}
+	}
+
+	return result.RoundDown(6), nil
+}
+
+func (m *MyDb) ProvideLiquidRecords() ([]model.ProvideLiquid, error) {
+	var result []model.ProvideLiquid
+	tx := m.Db.Raw(`SELECT * from provide_liquid WHERE status=0`).Scan(&result)
+	if tx.Error != nil {
+		return result, tx.Error
+	}
+	return result, nil
+}
+
+func (m *MyDb) SelectAllActiveLoans() ([]model.Loan, error) {
+	var result []model.Loan
+	tx := m.Db.Raw(`SELECT * from loan WHERE status=2 OR status=3`).Scan(&result)
+	if tx.Error != nil {
+		return result, tx.Error
+	}
+	return result, nil
 }

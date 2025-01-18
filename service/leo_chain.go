@@ -193,20 +193,24 @@ func (s *LeoChainService) SaveBlockTransaction(
 			return err
 		}
 		if len(deposit) > 0 {
-			usdt, err := s.CalculateReleaseUsdt(parseInt)
+			sloan, err := s.Db.SelectLoanById(deposit[0].LoanId)
 			if err != nil {
 				return err
 			}
-			loan, err := s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime, usdt)
+			loanAmount, interestAmount, err := s.CalculateReleaseUsdt(parseInt, sloan.Stages, sloan.DayPerStage)
+			if err != nil {
+				return err
+			}
+			loan, err := s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime, loanAmount, interestAmount)
 			if err != nil {
 				return err
 			}
 			if loan.Status == 1 && loan.ReleaseHash == "" {
 				err = s.BscService.CreateLoanInContract(
 					big.NewInt(int64(loan.ID)),
-					usdt.BigInt(),
+					loanAmount.BigInt(),
 					big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
-					loan.InterestAmount.BigInt(),
+					interestAmount.BigInt(),
 					loan.BscAddress)
 				if err != nil {
 					return err
@@ -240,16 +244,24 @@ func (s *LeoChainService) PayBackLoan(to, amount string) error {
 	return nil
 }
 
-func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64) (decimal.Decimal, error) {
+func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64, stages, perDay int) (decimal.Decimal, decimal.Decimal, error) {
 	price, err := s.Db.GetLatestPrice()
 	if err != nil {
-		return decimal.NewFromInt(0), err
+		return decimal.NewFromInt(0), decimal.NewFromInt(0), err
 	}
-	rate, err := s.Db.GetLatestRate()
+	rates, err := s.Db.GetLatestRateOfWeek()
 	if err != nil {
-		return decimal.NewFromInt(0), err
+		return decimal.NewFromInt(0), decimal.NewFromInt(0), err
 	}
-
-	usdtAmount := decimal.NewFromInt(aleoAmount).Mul(decimal.NewFromFloat(price * 1000000000000000000)).Mul(decimal.NewFromFloat(1 - rate))
-	return usdtAmount, nil
+	rate := rates[0].Rate
+	for _, r := range rates {
+		if r.Days == stages*perDay {
+			rate = r.Rate
+			break
+		}
+	}
+	rate = rate.Mul(decimal.NewFromInt(int64(stages)))
+	usdtAmount := decimal.NewFromInt(aleoAmount).Mul(decimal.NewFromFloat(price * 1000000000000000000))
+	interestAmount := usdtAmount.Mul(decimal.NewFromInt(1).Sub(rate))
+	return usdtAmount, interestAmount, nil
 }
