@@ -30,6 +30,7 @@ type Loan struct {
 	ReleaseAt         int             // loan create(release usdt) time
 	ReleaseHash       string          // loan create(release usdt) hash
 	ReleaseAmount     decimal.Decimal // release usdt amount
+	InterestAmount    decimal.Decimal //
 	PayBackAt         int             // pay back time
 	PayBackHash       string          // pay back hash
 	PayBackAmount     decimal.Decimal // pay back usdt amount
@@ -53,15 +54,16 @@ type Deposit struct {
 
 type LoanConfig struct {
 	gorm.Model
-	Rate            decimal.Decimal
-	ReleaseRate     decimal.Decimal
-	AvailableStages int
-	DayPerStage     int
-	AllowTypes      string
-	BannerIds       string
-	MinLoanAmount   int64
-	MaxLoanAmount   int64
-	AleoPrice       decimal.Decimal
+	Rate               decimal.Decimal
+	ReleaseRate        decimal.Decimal
+	AvailableStages    int
+	DayPerStage        int
+	AllowTypes         string
+	BannerIds          string
+	MinLoanAmount      int64
+	MaxLoanAmount      int64
+	AleoPrice          decimal.Decimal
+	PlatformIncomeRate decimal.Decimal
 }
 
 type ImageAssets struct {
@@ -69,22 +71,27 @@ type ImageAssets struct {
 	Url string
 }
 
-type ProvideRecord struct {
+type ProvideLiquid struct {
 	gorm.Model
-	Type     int // 0 increase, 1 retrieve
-	Provider string
-	Amount   decimal.Decimal
-	Hash     string
-	At       int
+	Amount       decimal.Decimal
+	Duration     int
+	Start        int
+	Status       int // 0 normal, 1 retrieve
+	Provider     string
+	CreateAt     int
+	CreateHash   string
+	RetrieveAt   int
+	RetrieveHash string
 }
 
 type ProvideRewardRecord struct {
 	gorm.Model
-	Type     int // 0 increase, 1 withdraw
-	Provider string
-	Amount   decimal.Decimal
-	Hash     string
-	At       int
+	Type       int // 0 increase, 1 withdraw
+	Provider   string
+	Amount     decimal.Decimal
+	Hash       string
+	At         int
+	SourceType int // 0 provide(provider), 1 loan(platform), 2 provider withdraw reward fee(platform), 3 provider release fee(platform)
 }
 
 type ActionRecord struct {
@@ -105,4 +112,15 @@ type LeoRateRecord struct {
 	gorm.Model
 	Rate decimal.Decimal
 	At   int
+}
+
+type IncomeRecord struct {
+	gorm.Model
+	Amount     decimal.Decimal
+	At         int
+	IsNegative int    // 0 no, 1 yes
+	Type       int    // 1 interest(3:7), 2 provider withdraw reward fee(1:0), 3 provider release fee(1:0), 4 clear(3:7)
+	SplitDays  int    //
+	EndAt      int    //
+	Hash       string // hash of create action
 }

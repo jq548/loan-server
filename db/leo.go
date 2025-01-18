@@ -9,6 +9,7 @@ import (
 	errors2 "loan-server/common/errors"
 	"loan-server/model"
 	"strconv"
+	"time"
 )
 
 func (m *MyDb) GetConfig() (model.LoanConfig, error) {
@@ -86,12 +87,13 @@ func (m *MyDb) NewDeposit(
 	aleoAmount int64,
 	stages, dayPerStage int) error {
 	loan := &model.Loan{
-		AleoAddress: aleoAddress,
-		BscAddress:  bscAddress,
-		Status:      0,
-		Email:       email,
-		Stages:      stages,
-		DayPerStage: dayPerStage,
+		AleoAddress:    aleoAddress,
+		BscAddress:     bscAddress,
+		Status:         0,
+		Email:          email,
+		Stages:         stages,
+		DayPerStage:    dayPerStage,
+		InterestAmount: decimal.NewFromInt(18),
 	}
 	tx := m.Db.Create(&loan)
 	if tx.Error != nil {
@@ -138,11 +140,16 @@ func (m *MyDb) SaveDepositHash(
 		ID: deposit.LoanId,
 	}).Find(&loan)
 	if loan.Status == 0 {
+		interest, err := m.CalculateInterest(usdt)
+		if err != nil {
+			return nil, err
+		}
 		loan.Status = 1
 		loan.StartAt = at
 		loan.ReleaseAmount = usdt
 		loan.ReleaseAt = 0
 		loan.ReleaseHash = ""
+		loan.InterestAmount = interest
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
 			return nil, tx.Error
@@ -252,4 +259,30 @@ func (m *MyDb) GetLatestRate() (float64, error) {
 	}
 	res := record.Rate.InexactFloat64()
 	return res, nil
+}
+
+func (m *MyDb) SaveLatestAleoPrice(price float64) error {
+	tx := m.Db.Create(&model.LeoPriceRecord{
+		Price: decimal.NewFromFloat(price),
+		At:    int(time.Now().Unix()),
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) SaveLatestRate(price float64) error {
+	tx := m.Db.Create(&model.LeoRateRecord{
+		Rate: decimal.NewFromFloat(price),
+		At:   int(time.Now().Unix()),
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) CalculateInterest(loanAmount decimal.Decimal) (decimal.Decimal, error) {
+	return decimal.NewFromInt(10), nil
 }

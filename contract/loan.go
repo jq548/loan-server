@@ -31,7 +31,7 @@ var (
 
 // ContractMetaData contains all meta data concerning the Contract contract.
 var ContractMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventClear\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventIncreaseLiquidReward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventNewLoan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventPayBack\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderIncrease\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderRetrieve\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventReleaseLiquidReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"addNewLoan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"addresses\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"clear\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"exchangeLpUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"extract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"increaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"loans\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"status\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"}],\"name\":\"maxExchangeLpUsdt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"payBack\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"provideUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"releaseAbleLiquidReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"releaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"retrieveUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"setLpContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"}],\"name\":\"setUsdtContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"}],\"name\":\"transferCaller\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"transferOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventClear\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventIncreaseLiquidReward\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"releaseAmount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"interestAmount\",\"type\":\"uint256\"}],\"name\":\"eventNewLoan\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"}],\"name\":\"eventPayBack\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"eventProviderAdd\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"}],\"name\":\"eventProviderRedeem\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"fee\",\"type\":\"uint256\"}],\"name\":\"eventReleaseLiquidReward\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"id\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"interestAmount\",\"type\":\"uint256\"}],\"name\":\"addNewLoan\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"addresses\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"clear\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"exchangeLpUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"extract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"increaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"init\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"liquidProvides\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"status\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"liquidReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"loans\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"loanAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"start\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"status\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"loaner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"releaseAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"interestAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"forward\",\"type\":\"bool\"}],\"name\":\"maxExchangeLpUsdt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"params\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"loanId\",\"type\":\"uint256\"}],\"name\":\"payBack\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"duration\",\"type\":\"uint256\"}],\"name\":\"provideUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"provider\",\"type\":\"address\"}],\"name\":\"releaseAbleLiquidReward\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"releaseLiquidReward\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"provideId\",\"type\":\"uint256\"}],\"name\":\"retrieveUsdt\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"lp\",\"type\":\"address\"}],\"name\":\"setLpContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"key\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"setParams\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"usdt\",\"type\":\"address\"}],\"name\":\"setUsdtContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"caller\",\"type\":\"address\"}],\"name\":\"transferCaller\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"transferOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]",
 }
 
 // ContractABI is the input ABI used to generate the binding from.
@@ -211,25 +211,25 @@ func (_Contract *ContractCallerSession) Addresses(arg0 *big.Int) (common.Address
 	return _Contract.Contract.Addresses(&_Contract.CallOpts, arg0)
 }
 
-// Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
+// LiquidProvides is a free data retrieval call binding the contract method 0xdf0796c0.
 //
-// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
-func (_Contract *ContractCaller) Loans(opts *bind.CallOpts, arg0 *big.Int) (struct {
+// Solidity: function liquidProvides(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address provider)
+func (_Contract *ContractCaller) LiquidProvides(opts *bind.CallOpts, arg0 *big.Int) (struct {
 	Amount   *big.Int
 	Duration *big.Int
 	Start    *big.Int
 	Status   *big.Int
-	Loaner   common.Address
+	Provider common.Address
 }, error) {
 	var out []interface{}
-	err := _Contract.contract.Call(opts, &out, "loans", arg0)
+	err := _Contract.contract.Call(opts, &out, "liquidProvides", arg0)
 
 	outstruct := new(struct {
 		Amount   *big.Int
 		Duration *big.Int
 		Start    *big.Int
 		Status   *big.Int
-		Loaner   common.Address
+		Provider common.Address
 	})
 	if err != nil {
 		return *outstruct, err
@@ -239,7 +239,104 @@ func (_Contract *ContractCaller) Loans(opts *bind.CallOpts, arg0 *big.Int) (stru
 	outstruct.Duration = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 	outstruct.Start = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
 	outstruct.Status = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	outstruct.Provider = *abi.ConvertType(out[4], new(common.Address)).(*common.Address)
+
+	return *outstruct, err
+
+}
+
+// LiquidProvides is a free data retrieval call binding the contract method 0xdf0796c0.
+//
+// Solidity: function liquidProvides(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address provider)
+func (_Contract *ContractSession) LiquidProvides(arg0 *big.Int) (struct {
+	Amount   *big.Int
+	Duration *big.Int
+	Start    *big.Int
+	Status   *big.Int
+	Provider common.Address
+}, error) {
+	return _Contract.Contract.LiquidProvides(&_Contract.CallOpts, arg0)
+}
+
+// LiquidProvides is a free data retrieval call binding the contract method 0xdf0796c0.
+//
+// Solidity: function liquidProvides(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address provider)
+func (_Contract *ContractCallerSession) LiquidProvides(arg0 *big.Int) (struct {
+	Amount   *big.Int
+	Duration *big.Int
+	Start    *big.Int
+	Status   *big.Int
+	Provider common.Address
+}, error) {
+	return _Contract.Contract.LiquidProvides(&_Contract.CallOpts, arg0)
+}
+
+// LiquidReward is a free data retrieval call binding the contract method 0xa9bc32d7.
+//
+// Solidity: function liquidReward(address ) view returns(uint256)
+func (_Contract *ContractCaller) LiquidReward(opts *bind.CallOpts, arg0 common.Address) (*big.Int, error) {
+	var out []interface{}
+	err := _Contract.contract.Call(opts, &out, "liquidReward", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// LiquidReward is a free data retrieval call binding the contract method 0xa9bc32d7.
+//
+// Solidity: function liquidReward(address ) view returns(uint256)
+func (_Contract *ContractSession) LiquidReward(arg0 common.Address) (*big.Int, error) {
+	return _Contract.Contract.LiquidReward(&_Contract.CallOpts, arg0)
+}
+
+// LiquidReward is a free data retrieval call binding the contract method 0xa9bc32d7.
+//
+// Solidity: function liquidReward(address ) view returns(uint256)
+func (_Contract *ContractCallerSession) LiquidReward(arg0 common.Address) (*big.Int, error) {
+	return _Contract.Contract.LiquidReward(&_Contract.CallOpts, arg0)
+}
+
+// Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
+//
+// Solidity: function loans(uint256 ) view returns(uint256 loanAmount, uint256 duration, uint256 start, uint256 status, address loaner, uint256 releaseAmount, uint256 interestAmount)
+func (_Contract *ContractCaller) Loans(opts *bind.CallOpts, arg0 *big.Int) (struct {
+	LoanAmount     *big.Int
+	Duration       *big.Int
+	Start          *big.Int
+	Status         *big.Int
+	Loaner         common.Address
+	ReleaseAmount  *big.Int
+	InterestAmount *big.Int
+}, error) {
+	var out []interface{}
+	err := _Contract.contract.Call(opts, &out, "loans", arg0)
+
+	outstruct := new(struct {
+		LoanAmount     *big.Int
+		Duration       *big.Int
+		Start          *big.Int
+		Status         *big.Int
+		Loaner         common.Address
+		ReleaseAmount  *big.Int
+		InterestAmount *big.Int
+	})
+	if err != nil {
+		return *outstruct, err
+	}
+
+	outstruct.LoanAmount = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+	outstruct.Duration = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
+	outstruct.Start = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.Status = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
 	outstruct.Loaner = *abi.ConvertType(out[4], new(common.Address)).(*common.Address)
+	outstruct.ReleaseAmount = *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
+	outstruct.InterestAmount = *abi.ConvertType(out[6], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -247,26 +344,30 @@ func (_Contract *ContractCaller) Loans(opts *bind.CallOpts, arg0 *big.Int) (stru
 
 // Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
 //
-// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
+// Solidity: function loans(uint256 ) view returns(uint256 loanAmount, uint256 duration, uint256 start, uint256 status, address loaner, uint256 releaseAmount, uint256 interestAmount)
 func (_Contract *ContractSession) Loans(arg0 *big.Int) (struct {
-	Amount   *big.Int
-	Duration *big.Int
-	Start    *big.Int
-	Status   *big.Int
-	Loaner   common.Address
+	LoanAmount     *big.Int
+	Duration       *big.Int
+	Start          *big.Int
+	Status         *big.Int
+	Loaner         common.Address
+	ReleaseAmount  *big.Int
+	InterestAmount *big.Int
 }, error) {
 	return _Contract.Contract.Loans(&_Contract.CallOpts, arg0)
 }
 
 // Loans is a free data retrieval call binding the contract method 0xe1ec3c68.
 //
-// Solidity: function loans(uint256 ) view returns(uint256 amount, uint256 duration, uint256 start, uint256 status, address loaner)
+// Solidity: function loans(uint256 ) view returns(uint256 loanAmount, uint256 duration, uint256 start, uint256 status, address loaner, uint256 releaseAmount, uint256 interestAmount)
 func (_Contract *ContractCallerSession) Loans(arg0 *big.Int) (struct {
-	Amount   *big.Int
-	Duration *big.Int
-	Start    *big.Int
-	Status   *big.Int
-	Loaner   common.Address
+	LoanAmount     *big.Int
+	Duration       *big.Int
+	Start          *big.Int
+	Status         *big.Int
+	Loaner         common.Address
+	ReleaseAmount  *big.Int
+	InterestAmount *big.Int
 }, error) {
 	return _Contract.Contract.Loans(&_Contract.CallOpts, arg0)
 }
@@ -302,6 +403,37 @@ func (_Contract *ContractCallerSession) MaxExchangeLpUsdt(forward bool) (*big.In
 	return _Contract.Contract.MaxExchangeLpUsdt(&_Contract.CallOpts, forward)
 }
 
+// Params is a free data retrieval call binding the contract method 0x9d2f053c.
+//
+// Solidity: function params(uint256 ) view returns(uint256)
+func (_Contract *ContractCaller) Params(opts *bind.CallOpts, arg0 *big.Int) (*big.Int, error) {
+	var out []interface{}
+	err := _Contract.contract.Call(opts, &out, "params", arg0)
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// Params is a free data retrieval call binding the contract method 0x9d2f053c.
+//
+// Solidity: function params(uint256 ) view returns(uint256)
+func (_Contract *ContractSession) Params(arg0 *big.Int) (*big.Int, error) {
+	return _Contract.Contract.Params(&_Contract.CallOpts, arg0)
+}
+
+// Params is a free data retrieval call binding the contract method 0x9d2f053c.
+//
+// Solidity: function params(uint256 ) view returns(uint256)
+func (_Contract *ContractCallerSession) Params(arg0 *big.Int) (*big.Int, error) {
+	return _Contract.Contract.Params(&_Contract.CallOpts, arg0)
+}
+
 // ReleaseAbleLiquidReward is a free data retrieval call binding the contract method 0xae357555.
 //
 // Solidity: function releaseAbleLiquidReward(address provider) view returns(uint256)
@@ -333,25 +465,25 @@ func (_Contract *ContractCallerSession) ReleaseAbleLiquidReward(provider common.
 	return _Contract.Contract.ReleaseAbleLiquidReward(&_Contract.CallOpts, provider)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
+// AddNewLoan is a paid mutator transaction binding the contract method 0x7535cd4b.
 //
-// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
-func (_Contract *ContractTransactor) AddNewLoan(opts *bind.TransactOpts, id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "addNewLoan", id, amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner, uint256 interestAmount) returns()
+func (_Contract *ContractTransactor) AddNewLoan(opts *bind.TransactOpts, id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address, interestAmount *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "addNewLoan", id, amount, duration, loaner, interestAmount)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
+// AddNewLoan is a paid mutator transaction binding the contract method 0x7535cd4b.
 //
-// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
-func (_Contract *ContractSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner, uint256 interestAmount) returns()
+func (_Contract *ContractSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address, interestAmount *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner, interestAmount)
 }
 
-// AddNewLoan is a paid mutator transaction binding the contract method 0xcc6c2483.
+// AddNewLoan is a paid mutator transaction binding the contract method 0x7535cd4b.
 //
-// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner) returns()
-func (_Contract *ContractTransactorSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address) (*types.Transaction, error) {
-	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner)
+// Solidity: function addNewLoan(uint256 id, uint256 amount, uint256 duration, address loaner, uint256 interestAmount) returns()
+func (_Contract *ContractTransactorSession) AddNewLoan(id *big.Int, amount *big.Int, duration *big.Int, loaner common.Address, interestAmount *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.AddNewLoan(&_Contract.TransactOpts, id, amount, duration, loaner, interestAmount)
 }
 
 // Clear is a paid mutator transaction binding the contract method 0xc0fe1af8.
@@ -480,25 +612,25 @@ func (_Contract *ContractTransactorSession) PayBack(loanId *big.Int) (*types.Tra
 	return _Contract.Contract.PayBack(&_Contract.TransactOpts, loanId)
 }
 
-// ProvideUsdt is a paid mutator transaction binding the contract method 0xfa455e09.
+// ProvideUsdt is a paid mutator transaction binding the contract method 0xff47eeab.
 //
-// Solidity: function provideUsdt(uint256 amount) returns()
-func (_Contract *ContractTransactor) ProvideUsdt(opts *bind.TransactOpts, amount *big.Int) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "provideUsdt", amount)
+// Solidity: function provideUsdt(uint256 amount, uint256 duration) returns()
+func (_Contract *ContractTransactor) ProvideUsdt(opts *bind.TransactOpts, amount *big.Int, duration *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "provideUsdt", amount, duration)
 }
 
-// ProvideUsdt is a paid mutator transaction binding the contract method 0xfa455e09.
+// ProvideUsdt is a paid mutator transaction binding the contract method 0xff47eeab.
 //
-// Solidity: function provideUsdt(uint256 amount) returns()
-func (_Contract *ContractSession) ProvideUsdt(amount *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.ProvideUsdt(&_Contract.TransactOpts, amount)
+// Solidity: function provideUsdt(uint256 amount, uint256 duration) returns()
+func (_Contract *ContractSession) ProvideUsdt(amount *big.Int, duration *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.ProvideUsdt(&_Contract.TransactOpts, amount, duration)
 }
 
-// ProvideUsdt is a paid mutator transaction binding the contract method 0xfa455e09.
+// ProvideUsdt is a paid mutator transaction binding the contract method 0xff47eeab.
 //
-// Solidity: function provideUsdt(uint256 amount) returns()
-func (_Contract *ContractTransactorSession) ProvideUsdt(amount *big.Int) (*types.Transaction, error) {
-	return _Contract.Contract.ProvideUsdt(&_Contract.TransactOpts, amount)
+// Solidity: function provideUsdt(uint256 amount, uint256 duration) returns()
+func (_Contract *ContractTransactorSession) ProvideUsdt(amount *big.Int, duration *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.ProvideUsdt(&_Contract.TransactOpts, amount, duration)
 }
 
 // ReleaseLiquidReward is a paid mutator transaction binding the contract method 0x19b11619.
@@ -522,25 +654,25 @@ func (_Contract *ContractTransactorSession) ReleaseLiquidReward() (*types.Transa
 	return _Contract.Contract.ReleaseLiquidReward(&_Contract.TransactOpts)
 }
 
-// RetrieveUsdt is a paid mutator transaction binding the contract method 0xc903cf67.
+// RetrieveUsdt is a paid mutator transaction binding the contract method 0x952932b8.
 //
-// Solidity: function retrieveUsdt() returns()
-func (_Contract *ContractTransactor) RetrieveUsdt(opts *bind.TransactOpts) (*types.Transaction, error) {
-	return _Contract.contract.Transact(opts, "retrieveUsdt")
+// Solidity: function retrieveUsdt(uint256 provideId) returns()
+func (_Contract *ContractTransactor) RetrieveUsdt(opts *bind.TransactOpts, provideId *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "retrieveUsdt", provideId)
 }
 
-// RetrieveUsdt is a paid mutator transaction binding the contract method 0xc903cf67.
+// RetrieveUsdt is a paid mutator transaction binding the contract method 0x952932b8.
 //
-// Solidity: function retrieveUsdt() returns()
-func (_Contract *ContractSession) RetrieveUsdt() (*types.Transaction, error) {
-	return _Contract.Contract.RetrieveUsdt(&_Contract.TransactOpts)
+// Solidity: function retrieveUsdt(uint256 provideId) returns()
+func (_Contract *ContractSession) RetrieveUsdt(provideId *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.RetrieveUsdt(&_Contract.TransactOpts, provideId)
 }
 
-// RetrieveUsdt is a paid mutator transaction binding the contract method 0xc903cf67.
+// RetrieveUsdt is a paid mutator transaction binding the contract method 0x952932b8.
 //
-// Solidity: function retrieveUsdt() returns()
-func (_Contract *ContractTransactorSession) RetrieveUsdt() (*types.Transaction, error) {
-	return _Contract.Contract.RetrieveUsdt(&_Contract.TransactOpts)
+// Solidity: function retrieveUsdt(uint256 provideId) returns()
+func (_Contract *ContractTransactorSession) RetrieveUsdt(provideId *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.RetrieveUsdt(&_Contract.TransactOpts, provideId)
 }
 
 // SetLpContract is a paid mutator transaction binding the contract method 0x40c0ac2d.
@@ -562,6 +694,27 @@ func (_Contract *ContractSession) SetLpContract(lp common.Address) (*types.Trans
 // Solidity: function setLpContract(address lp) returns()
 func (_Contract *ContractTransactorSession) SetLpContract(lp common.Address) (*types.Transaction, error) {
 	return _Contract.Contract.SetLpContract(&_Contract.TransactOpts, lp)
+}
+
+// SetParams is a paid mutator transaction binding the contract method 0xc0324c77.
+//
+// Solidity: function setParams(uint256 key, uint256 value) returns()
+func (_Contract *ContractTransactor) SetParams(opts *bind.TransactOpts, key *big.Int, value *big.Int) (*types.Transaction, error) {
+	return _Contract.contract.Transact(opts, "setParams", key, value)
+}
+
+// SetParams is a paid mutator transaction binding the contract method 0xc0324c77.
+//
+// Solidity: function setParams(uint256 key, uint256 value) returns()
+func (_Contract *ContractSession) SetParams(key *big.Int, value *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.SetParams(&_Contract.TransactOpts, key, value)
+}
+
+// SetParams is a paid mutator transaction binding the contract method 0xc0324c77.
+//
+// Solidity: function setParams(uint256 key, uint256 value) returns()
+func (_Contract *ContractTransactorSession) SetParams(key *big.Int, value *big.Int) (*types.Transaction, error) {
+	return _Contract.Contract.SetParams(&_Contract.TransactOpts, key, value)
 }
 
 // SetUsdtContract is a paid mutator transaction binding the contract method 0x576338a5.
@@ -967,17 +1120,19 @@ func (it *ContractEventNewLoanIterator) Close() error {
 
 // ContractEventNewLoan represents a EventNewLoan event raised by the Contract contract.
 type ContractEventNewLoan struct {
-	LoanId   *big.Int
-	Duration *big.Int
-	Start    *big.Int
-	Amount   *big.Int
-	Loaner   common.Address
-	Raw      types.Log // Blockchain specific contextual infos
+	LoanId         *big.Int
+	Duration       *big.Int
+	Start          *big.Int
+	LoanAmount     *big.Int
+	Loaner         common.Address
+	ReleaseAmount  *big.Int
+	InterestAmount *big.Int
+	Raw            types.Log // Blockchain specific contextual infos
 }
 
-// FilterEventNewLoan is a free log retrieval operation binding the contract event 0xb2990d266ec4e479259ef8c68e87d6c03ab8dbafa4e785e79d2ed1545a383083.
+// FilterEventNewLoan is a free log retrieval operation binding the contract event 0x8359c828396108eedea00704782ac2a600d822d6d56312c4e10f62408aedca5d.
 //
-// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 amount, address loaner)
+// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 loanAmount, address loaner, uint256 releaseAmount, uint256 interestAmount)
 func (_Contract *ContractFilterer) FilterEventNewLoan(opts *bind.FilterOpts) (*ContractEventNewLoanIterator, error) {
 
 	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventNewLoan")
@@ -987,9 +1142,9 @@ func (_Contract *ContractFilterer) FilterEventNewLoan(opts *bind.FilterOpts) (*C
 	return &ContractEventNewLoanIterator{contract: _Contract.contract, event: "eventNewLoan", logs: logs, sub: sub}, nil
 }
 
-// WatchEventNewLoan is a free log subscription operation binding the contract event 0xb2990d266ec4e479259ef8c68e87d6c03ab8dbafa4e785e79d2ed1545a383083.
+// WatchEventNewLoan is a free log subscription operation binding the contract event 0x8359c828396108eedea00704782ac2a600d822d6d56312c4e10f62408aedca5d.
 //
-// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 amount, address loaner)
+// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 loanAmount, address loaner, uint256 releaseAmount, uint256 interestAmount)
 func (_Contract *ContractFilterer) WatchEventNewLoan(opts *bind.WatchOpts, sink chan<- *ContractEventNewLoan) (event.Subscription, error) {
 
 	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventNewLoan")
@@ -1024,9 +1179,9 @@ func (_Contract *ContractFilterer) WatchEventNewLoan(opts *bind.WatchOpts, sink 
 	}), nil
 }
 
-// ParseEventNewLoan is a log parse operation binding the contract event 0xb2990d266ec4e479259ef8c68e87d6c03ab8dbafa4e785e79d2ed1545a383083.
+// ParseEventNewLoan is a log parse operation binding the contract event 0x8359c828396108eedea00704782ac2a600d822d6d56312c4e10f62408aedca5d.
 //
-// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 amount, address loaner)
+// Solidity: event eventNewLoan(uint256 loanId, uint256 duration, uint256 start, uint256 loanAmount, address loaner, uint256 releaseAmount, uint256 interestAmount)
 func (_Contract *ContractFilterer) ParseEventNewLoan(log types.Log) (*ContractEventNewLoan, error) {
 	event := new(ContractEventNewLoan)
 	if err := _Contract.contract.UnpackLog(event, "eventNewLoan", log); err != nil {
@@ -1172,9 +1327,9 @@ func (_Contract *ContractFilterer) ParseEventPayBack(log types.Log) (*ContractEv
 	return event, nil
 }
 
-// ContractEventProviderIncreaseIterator is returned from FilterEventProviderIncrease and is used to iterate over the raw logs and unpacked data for EventProviderIncrease events raised by the Contract contract.
-type ContractEventProviderIncreaseIterator struct {
-	Event *ContractEventProviderIncrease // Event containing the contract specifics and raw log
+// ContractEventProviderAddIterator is returned from FilterEventProviderAdd and is used to iterate over the raw logs and unpacked data for EventProviderAdd events raised by the Contract contract.
+type ContractEventProviderAddIterator struct {
+	Event *ContractEventProviderAdd // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1188,7 +1343,7 @@ type ContractEventProviderIncreaseIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ContractEventProviderIncreaseIterator) Next() bool {
+func (it *ContractEventProviderAddIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1197,7 +1352,7 @@ func (it *ContractEventProviderIncreaseIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ContractEventProviderIncrease)
+			it.Event = new(ContractEventProviderAdd)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1212,7 +1367,7 @@ func (it *ContractEventProviderIncreaseIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ContractEventProviderIncrease)
+		it.Event = new(ContractEventProviderAdd)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1228,42 +1383,45 @@ func (it *ContractEventProviderIncreaseIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ContractEventProviderIncreaseIterator) Error() error {
+func (it *ContractEventProviderAddIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ContractEventProviderIncreaseIterator) Close() error {
+func (it *ContractEventProviderAddIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ContractEventProviderIncrease represents a EventProviderIncrease event raised by the Contract contract.
-type ContractEventProviderIncrease struct {
+// ContractEventProviderAdd represents a EventProviderAdd event raised by the Contract contract.
+type ContractEventProviderAdd struct {
+	Id       *big.Int
+	Duration *big.Int
+	Start    *big.Int
 	Amount   *big.Int
 	Provider common.Address
 	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterEventProviderIncrease is a free log retrieval operation binding the contract event 0xc7f079bb1739a7fcb563479a77ec3ff5de5ba875b2b8b44d897abfc3ac58a8ed.
+// FilterEventProviderAdd is a free log retrieval operation binding the contract event 0x75780a70131ef5cf8aff25941e13a743681d34e1eb85abde44b32e09280e1fcc.
 //
-// Solidity: event eventProviderIncrease(uint256 amount, address provider)
-func (_Contract *ContractFilterer) FilterEventProviderIncrease(opts *bind.FilterOpts) (*ContractEventProviderIncreaseIterator, error) {
+// Solidity: event eventProviderAdd(uint256 id, uint256 duration, uint256 start, uint256 amount, address provider)
+func (_Contract *ContractFilterer) FilterEventProviderAdd(opts *bind.FilterOpts) (*ContractEventProviderAddIterator, error) {
 
-	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventProviderIncrease")
+	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventProviderAdd")
 	if err != nil {
 		return nil, err
 	}
-	return &ContractEventProviderIncreaseIterator{contract: _Contract.contract, event: "eventProviderIncrease", logs: logs, sub: sub}, nil
+	return &ContractEventProviderAddIterator{contract: _Contract.contract, event: "eventProviderAdd", logs: logs, sub: sub}, nil
 }
 
-// WatchEventProviderIncrease is a free log subscription operation binding the contract event 0xc7f079bb1739a7fcb563479a77ec3ff5de5ba875b2b8b44d897abfc3ac58a8ed.
+// WatchEventProviderAdd is a free log subscription operation binding the contract event 0x75780a70131ef5cf8aff25941e13a743681d34e1eb85abde44b32e09280e1fcc.
 //
-// Solidity: event eventProviderIncrease(uint256 amount, address provider)
-func (_Contract *ContractFilterer) WatchEventProviderIncrease(opts *bind.WatchOpts, sink chan<- *ContractEventProviderIncrease) (event.Subscription, error) {
+// Solidity: event eventProviderAdd(uint256 id, uint256 duration, uint256 start, uint256 amount, address provider)
+func (_Contract *ContractFilterer) WatchEventProviderAdd(opts *bind.WatchOpts, sink chan<- *ContractEventProviderAdd) (event.Subscription, error) {
 
-	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventProviderIncrease")
+	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventProviderAdd")
 	if err != nil {
 		return nil, err
 	}
@@ -1273,8 +1431,8 @@ func (_Contract *ContractFilterer) WatchEventProviderIncrease(opts *bind.WatchOp
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ContractEventProviderIncrease)
-				if err := _Contract.contract.UnpackLog(event, "eventProviderIncrease", log); err != nil {
+				event := new(ContractEventProviderAdd)
+				if err := _Contract.contract.UnpackLog(event, "eventProviderAdd", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1295,21 +1453,21 @@ func (_Contract *ContractFilterer) WatchEventProviderIncrease(opts *bind.WatchOp
 	}), nil
 }
 
-// ParseEventProviderIncrease is a log parse operation binding the contract event 0xc7f079bb1739a7fcb563479a77ec3ff5de5ba875b2b8b44d897abfc3ac58a8ed.
+// ParseEventProviderAdd is a log parse operation binding the contract event 0x75780a70131ef5cf8aff25941e13a743681d34e1eb85abde44b32e09280e1fcc.
 //
-// Solidity: event eventProviderIncrease(uint256 amount, address provider)
-func (_Contract *ContractFilterer) ParseEventProviderIncrease(log types.Log) (*ContractEventProviderIncrease, error) {
-	event := new(ContractEventProviderIncrease)
-	if err := _Contract.contract.UnpackLog(event, "eventProviderIncrease", log); err != nil {
+// Solidity: event eventProviderAdd(uint256 id, uint256 duration, uint256 start, uint256 amount, address provider)
+func (_Contract *ContractFilterer) ParseEventProviderAdd(log types.Log) (*ContractEventProviderAdd, error) {
+	event := new(ContractEventProviderAdd)
+	if err := _Contract.contract.UnpackLog(event, "eventProviderAdd", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
 	return event, nil
 }
 
-// ContractEventProviderRetrieveIterator is returned from FilterEventProviderRetrieve and is used to iterate over the raw logs and unpacked data for EventProviderRetrieve events raised by the Contract contract.
-type ContractEventProviderRetrieveIterator struct {
-	Event *ContractEventProviderRetrieve // Event containing the contract specifics and raw log
+// ContractEventProviderRedeemIterator is returned from FilterEventProviderRedeem and is used to iterate over the raw logs and unpacked data for EventProviderRedeem events raised by the Contract contract.
+type ContractEventProviderRedeemIterator struct {
+	Event *ContractEventProviderRedeem // Event containing the contract specifics and raw log
 
 	contract *bind.BoundContract // Generic contract to use for unpacking event data
 	event    string              // Event name to use for unpacking event data
@@ -1323,7 +1481,7 @@ type ContractEventProviderRetrieveIterator struct {
 // Next advances the iterator to the subsequent event, returning whether there
 // are any more events found. In case of a retrieval or parsing error, false is
 // returned and Error() can be queried for the exact failure.
-func (it *ContractEventProviderRetrieveIterator) Next() bool {
+func (it *ContractEventProviderRedeemIterator) Next() bool {
 	// If the iterator failed, stop iterating
 	if it.fail != nil {
 		return false
@@ -1332,7 +1490,7 @@ func (it *ContractEventProviderRetrieveIterator) Next() bool {
 	if it.done {
 		select {
 		case log := <-it.logs:
-			it.Event = new(ContractEventProviderRetrieve)
+			it.Event = new(ContractEventProviderRedeem)
 			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 				it.fail = err
 				return false
@@ -1347,7 +1505,7 @@ func (it *ContractEventProviderRetrieveIterator) Next() bool {
 	// Iterator still in progress, wait for either a data or an error event
 	select {
 	case log := <-it.logs:
-		it.Event = new(ContractEventProviderRetrieve)
+		it.Event = new(ContractEventProviderRedeem)
 		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
 			it.fail = err
 			return false
@@ -1363,42 +1521,44 @@ func (it *ContractEventProviderRetrieveIterator) Next() bool {
 }
 
 // Error returns any retrieval or parsing error occurred during filtering.
-func (it *ContractEventProviderRetrieveIterator) Error() error {
+func (it *ContractEventProviderRedeemIterator) Error() error {
 	return it.fail
 }
 
 // Close terminates the iteration process, releasing any pending underlying
 // resources.
-func (it *ContractEventProviderRetrieveIterator) Close() error {
+func (it *ContractEventProviderRedeemIterator) Close() error {
 	it.sub.Unsubscribe()
 	return nil
 }
 
-// ContractEventProviderRetrieve represents a EventProviderRetrieve event raised by the Contract contract.
-type ContractEventProviderRetrieve struct {
+// ContractEventProviderRedeem represents a EventProviderRedeem event raised by the Contract contract.
+type ContractEventProviderRedeem struct {
+	Id       *big.Int
 	Amount   *big.Int
 	Provider common.Address
+	Fee      *big.Int
 	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterEventProviderRetrieve is a free log retrieval operation binding the contract event 0x89fe3f29313aa6c03800bc780dc2b251ec749edd116569f40bd397cf1e8e08c8.
+// FilterEventProviderRedeem is a free log retrieval operation binding the contract event 0x1ec3add8915e0172b379ff4433663fbf4a45d4da64edb3e0402fb369e04b024a.
 //
-// Solidity: event eventProviderRetrieve(uint256 amount, address provider)
-func (_Contract *ContractFilterer) FilterEventProviderRetrieve(opts *bind.FilterOpts) (*ContractEventProviderRetrieveIterator, error) {
+// Solidity: event eventProviderRedeem(uint256 id, uint256 amount, address provider, uint256 fee)
+func (_Contract *ContractFilterer) FilterEventProviderRedeem(opts *bind.FilterOpts) (*ContractEventProviderRedeemIterator, error) {
 
-	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventProviderRetrieve")
+	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventProviderRedeem")
 	if err != nil {
 		return nil, err
 	}
-	return &ContractEventProviderRetrieveIterator{contract: _Contract.contract, event: "eventProviderRetrieve", logs: logs, sub: sub}, nil
+	return &ContractEventProviderRedeemIterator{contract: _Contract.contract, event: "eventProviderRedeem", logs: logs, sub: sub}, nil
 }
 
-// WatchEventProviderRetrieve is a free log subscription operation binding the contract event 0x89fe3f29313aa6c03800bc780dc2b251ec749edd116569f40bd397cf1e8e08c8.
+// WatchEventProviderRedeem is a free log subscription operation binding the contract event 0x1ec3add8915e0172b379ff4433663fbf4a45d4da64edb3e0402fb369e04b024a.
 //
-// Solidity: event eventProviderRetrieve(uint256 amount, address provider)
-func (_Contract *ContractFilterer) WatchEventProviderRetrieve(opts *bind.WatchOpts, sink chan<- *ContractEventProviderRetrieve) (event.Subscription, error) {
+// Solidity: event eventProviderRedeem(uint256 id, uint256 amount, address provider, uint256 fee)
+func (_Contract *ContractFilterer) WatchEventProviderRedeem(opts *bind.WatchOpts, sink chan<- *ContractEventProviderRedeem) (event.Subscription, error) {
 
-	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventProviderRetrieve")
+	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventProviderRedeem")
 	if err != nil {
 		return nil, err
 	}
@@ -1408,8 +1568,8 @@ func (_Contract *ContractFilterer) WatchEventProviderRetrieve(opts *bind.WatchOp
 			select {
 			case log := <-logs:
 				// New log arrived, parse the event and forward to the user
-				event := new(ContractEventProviderRetrieve)
-				if err := _Contract.contract.UnpackLog(event, "eventProviderRetrieve", log); err != nil {
+				event := new(ContractEventProviderRedeem)
+				if err := _Contract.contract.UnpackLog(event, "eventProviderRedeem", log); err != nil {
 					return err
 				}
 				event.Raw = log
@@ -1430,12 +1590,12 @@ func (_Contract *ContractFilterer) WatchEventProviderRetrieve(opts *bind.WatchOp
 	}), nil
 }
 
-// ParseEventProviderRetrieve is a log parse operation binding the contract event 0x89fe3f29313aa6c03800bc780dc2b251ec749edd116569f40bd397cf1e8e08c8.
+// ParseEventProviderRedeem is a log parse operation binding the contract event 0x1ec3add8915e0172b379ff4433663fbf4a45d4da64edb3e0402fb369e04b024a.
 //
-// Solidity: event eventProviderRetrieve(uint256 amount, address provider)
-func (_Contract *ContractFilterer) ParseEventProviderRetrieve(log types.Log) (*ContractEventProviderRetrieve, error) {
-	event := new(ContractEventProviderRetrieve)
-	if err := _Contract.contract.UnpackLog(event, "eventProviderRetrieve", log); err != nil {
+// Solidity: event eventProviderRedeem(uint256 id, uint256 amount, address provider, uint256 fee)
+func (_Contract *ContractFilterer) ParseEventProviderRedeem(log types.Log) (*ContractEventProviderRedeem, error) {
+	event := new(ContractEventProviderRedeem)
+	if err := _Contract.contract.UnpackLog(event, "eventProviderRedeem", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log
@@ -1513,12 +1673,13 @@ func (it *ContractEventReleaseLiquidRewardIterator) Close() error {
 type ContractEventReleaseLiquidReward struct {
 	Amount   *big.Int
 	Provider common.Address
+	Fee      *big.Int
 	Raw      types.Log // Blockchain specific contextual infos
 }
 
-// FilterEventReleaseLiquidReward is a free log retrieval operation binding the contract event 0x467456fb7eb39617bb976fc80dbff34a252f7ef0f1887ebcca77c2caaac5704d.
+// FilterEventReleaseLiquidReward is a free log retrieval operation binding the contract event 0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9.
 //
-// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider)
+// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider, uint256 fee)
 func (_Contract *ContractFilterer) FilterEventReleaseLiquidReward(opts *bind.FilterOpts) (*ContractEventReleaseLiquidRewardIterator, error) {
 
 	logs, sub, err := _Contract.contract.FilterLogs(opts, "eventReleaseLiquidReward")
@@ -1528,9 +1689,9 @@ func (_Contract *ContractFilterer) FilterEventReleaseLiquidReward(opts *bind.Fil
 	return &ContractEventReleaseLiquidRewardIterator{contract: _Contract.contract, event: "eventReleaseLiquidReward", logs: logs, sub: sub}, nil
 }
 
-// WatchEventReleaseLiquidReward is a free log subscription operation binding the contract event 0x467456fb7eb39617bb976fc80dbff34a252f7ef0f1887ebcca77c2caaac5704d.
+// WatchEventReleaseLiquidReward is a free log subscription operation binding the contract event 0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9.
 //
-// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider)
+// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider, uint256 fee)
 func (_Contract *ContractFilterer) WatchEventReleaseLiquidReward(opts *bind.WatchOpts, sink chan<- *ContractEventReleaseLiquidReward) (event.Subscription, error) {
 
 	logs, sub, err := _Contract.contract.WatchLogs(opts, "eventReleaseLiquidReward")
@@ -1565,9 +1726,9 @@ func (_Contract *ContractFilterer) WatchEventReleaseLiquidReward(opts *bind.Watc
 	}), nil
 }
 
-// ParseEventReleaseLiquidReward is a log parse operation binding the contract event 0x467456fb7eb39617bb976fc80dbff34a252f7ef0f1887ebcca77c2caaac5704d.
+// ParseEventReleaseLiquidReward is a log parse operation binding the contract event 0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9.
 //
-// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider)
+// Solidity: event eventReleaseLiquidReward(uint256 amount, address provider, uint256 fee)
 func (_Contract *ContractFilterer) ParseEventReleaseLiquidReward(log types.Log) (*ContractEventReleaseLiquidReward, error) {
 	event := new(ContractEventReleaseLiquidReward)
 	if err := _Contract.contract.UnpackLog(event, "eventReleaseLiquidReward", log); err != nil {

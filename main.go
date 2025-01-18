@@ -7,6 +7,7 @@ import (
 	"loan-server/config"
 	"loan-server/db"
 	"loan-server/handler"
+	"loan-server/job"
 	routers "loan-server/router"
 	"loan-server/service"
 	"log"
@@ -38,6 +39,12 @@ func main() {
 	bs.LeoService = ls
 	//go ls.Start()
 	//go bs.StartFetchEvent()
+
+	// ---- start job ----
+	myJob := job.NewJob(ls, bs, myDb)
+	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartFetchAleoPrice)
+	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartCalculateRate)
+	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartCalculateIncome)
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)

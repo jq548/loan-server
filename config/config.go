@@ -6,12 +6,13 @@ import (
 )
 
 type Config struct {
-	Db      Db      `yaml:"db"`
-	Leo     Leo     `yaml:"leo"`
-	Bsc     Bsc     `yaml:"bsc"`
-	Service Service `yaml:"service"`
-	Job     Job     `yaml:"job"`
-	Log     Log     `yaml:"log"`
+	Db       Db       `yaml:"db"`
+	Leo      Leo      `yaml:"leo"`
+	Bsc      Bsc      `yaml:"bsc"`
+	Service  Service  `yaml:"service"`
+	Job      Job      `yaml:"job"`
+	Log      Log      `yaml:"log"`
+	Platform Platform `yaml:"platform"`
 }
 
 type Db struct {
@@ -40,12 +41,17 @@ type Service struct {
 }
 
 type Job struct {
-	AleoPrice string `yaml:"aleo_price"`
-	Income    string `yaml:"income"`
+	AleoPrice       string `yaml:"aleo_price"`
+	CalculateRate   string `yaml:"calculate_rate"`
+	CalculateIncome string `yaml:"calculate_income"`
 }
 
 type Log struct {
 	Level string `yaml:"level"`
+}
+
+type Platform struct {
+	ReceiveAddress string `yaml:"receive_address"`
 }
 
 func InitConfig() (*Config, error) {

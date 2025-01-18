@@ -206,6 +206,7 @@ func (s *LeoChainService) SaveBlockTransaction(
 					big.NewInt(int64(loan.ID)),
 					usdt.BigInt(),
 					big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
+					loan.InterestAmount.BigInt(),
 					loan.BscAddress)
 				if err != nil {
 					return err

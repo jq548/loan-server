@@ -16,7 +16,10 @@ bsc:
 service:
   port: 8899
 job:
-  aleo_price: "* * *"
-  income: "* * * * *"
+  aleo_price: 0 * * * * ?
+  calculate_rate: 0 0 0 * * ?
+  calculate_income: 0 0 0 * * ?
 log:
   level: debug
+platform:
+  receive_address: 0x4332B66D46761476B0A50A2F12EE6a17DaCe7247
