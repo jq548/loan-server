@@ -288,6 +288,7 @@ func overview(myRouter *Router) gin.HandlerFunc {
 			ProvideLiquidRewardRate: "0.0003",
 			TotalDepositAleo:        totalDeposits.String(),
 			HistoryRate:             historyRate,
+			Banners:                 []string{},
 		}
 		success := res.Success(overviewData)
 		context.JSON(success.Code, success)

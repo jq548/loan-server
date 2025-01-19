@@ -73,6 +73,7 @@ type LeoOverView struct {
 	LiquidUsedRate          string                  `json:"liquid_used_rate"`
 	ProvideLiquidRewardRate string                  `json:"provide_liquid_reward_rate"`
 	TotalDepositAleo        string                  `json:"total_deposit_aleo"`
+	Banners                 []string                `json:"banners"`
 	HistoryRate             []LeoOverViewRateOfWeek `json:"history_rate"`
 }
 
