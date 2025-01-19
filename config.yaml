@@ -17,8 +17,8 @@ service:
   port: 8899
 job:
   aleo_price: 0 * * * * ?
-  calculate_rate: 0 * * * * ?
-  calculate_income: 0 0 * * * ?
+  calculate_rate: 0 0 0 * * ?
+  calculate_income: 0 0 0 * * ?
 log:
   level: debug
 platform:
