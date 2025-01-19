@@ -1,5 +1,7 @@
 package model
 
+import "github.com/shopspring/decimal"
+
 type LeoResConfig struct {
 	Rate           string   `json:"rate"`
 	AvailableStage int      `json:"available_stage"`
@@ -63,4 +65,19 @@ type LeoResInstallment struct {
 	DayPerInstallment   int    `json:"day_per_installment"`
 	InterestRate        string `json:"interest_rate"`
 	InterestInstallment string `json:"interest_installment"`
+}
+
+type LeoOverView struct {
+	TotalProvideLiquid      string                  `json:"total_provide_liquid"`
+	TotalLoaned             string                  `json:"total_loaned"`
+	LiquidUsedRate          string                  `json:"liquid_used_rate"`
+	ProvideLiquidRewardRate string                  `json:"provide_liquid_reward_rate"`
+	TotalDepositAleo        string                  `json:"total_deposit_aleo"`
+	HistoryRate             []LeoOverViewRateOfWeek `json:"history_rate"`
+}
+
+type LeoOverViewRateOfWeek struct {
+	Rate decimal.Decimal `json:"rate"`
+	At   int             `json:"at"`
+	Days int             `json:"days"`
 }

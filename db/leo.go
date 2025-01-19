@@ -255,7 +255,20 @@ func (m *MyDb) GetLatestRateOfWeek() ([]model.LeoRateRecord, error) {
 			return record, nil
 		}
 	}
-	//res := record.Rate.InexactFloat64()
+	return record, nil
+}
+
+func (m *MyDb) SelectHistoryOfRateOf1Week() ([]model.LeoRateRecord, error) {
+	var record []model.LeoRateRecord
+	ago := time.Now().Unix() - 3600*24*365
+	sqls := fmt.Sprintf("SELECT * FROM leo_rate_record WHERE days=7 AND at>%d;", ago)
+	tx := m.Db.Raw(sqls).Scan(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return record, nil
+		}
+		return record, tx.Error
+	}
 	return record, nil
 }
 

@@ -336,3 +336,12 @@ func (m *MyDb) SelectAllActiveLoans() ([]model.Loan, error) {
 	}
 	return result, nil
 }
+
+func (m *MyDb) SelectAllDepositsOfActiveLoans() ([]model.Deposit, error) {
+	var result []model.Deposit
+	tx := m.Db.Raw(`SELECT deposit.* from deposit LEFT JOIN loan ON deposit.loan_id=loan.id WHERE loan.status=2 OR loan.status=3;`).Scan(&result)
+	if tx.Error != nil {
+		return result, tx.Error
+	}
+	return result, nil
+}

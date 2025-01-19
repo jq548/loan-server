@@ -68,8 +68,10 @@ func (job *Job) StartCalculateRate() {
 	for _, a := range activeLoans {
 		totalLoaned = totalLoaned.Add(a.ReleaseAmount)
 	}
-
-	useRate := totalLoaned.Div(totalLiquid)
+	useRate := decimal.Zero
+	if !totalLiquid.Equal(decimal.Zero) {
+		useRate = totalLoaned.Div(totalLiquid)
+	}
 	cfg, err := job.Db.GetConfig()
 	if err != nil {
 		zap.S().Error(err)
@@ -121,7 +123,10 @@ func (job *Job) StartCalculateIncome() {
 		totalLiquid = totalLiquid.Add(p.Amount)
 	}
 	for _, p := range provideRecord {
-		amount := p.Amount.Div(totalLiquid).Mul(providerIncome)
+		amount := decimal.Zero
+		if !totalLiquid.Equal(decimal.Zero) {
+			amount = p.Amount.Div(totalLiquid).Mul(providerIncome)
+		}
 		index := indexOf(addresses, p.Provider)
 		if index == -1 {
 			addresses = append(addresses, p.Provider)

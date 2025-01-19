@@ -16,6 +16,7 @@ func (myRouter *Router) loadLeoRouters(engine *gin.Engine) {
 	engine.GET("/leo/calculate_usdt", calculateUsdt(myRouter))
 	engine.POST("/leo/save_deposoit", saveDeposit(myRouter))
 	engine.GET("/leo/loan_list", leoLoanList(myRouter))
+	engine.GET("/leo/overview", overview(myRouter))
 }
 
 // loanConfig
@@ -233,6 +234,62 @@ func leoLoanList(myRouter *Router) gin.HandlerFunc {
 			})
 		}
 		success := res.Success(resLoans)
+		context.JSON(success.Code, success)
+	}
+}
+
+// overview
+func overview(myRouter *Router) gin.HandlerFunc {
+	return func(context *gin.Context) {
+		provideRecords, err := myRouter.mydb.ProvideLiquidRecords()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		var totalLiquid decimal.Decimal
+		for _, p := range provideRecords {
+			totalLiquid = totalLiquid.Add(p.Amount)
+		}
+
+		activeLoans, err := myRouter.mydb.SelectAllActiveLoans()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		var totalLoaned decimal.Decimal
+		for _, a := range activeLoans {
+			totalLoaned = totalLoaned.Add(a.ReleaseAmount)
+		}
+		useRate := decimal.Zero
+		if !totalLiquid.Equal(decimal.Zero) {
+			useRate = totalLoaned.Div(totalLiquid)
+		}
+
+		totalDeposits := decimal.Zero
+		deposits, err := myRouter.mydb.SelectAllDepositsOfActiveLoans()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		for _, d := range deposits {
+			totalDeposits = totalDeposits.Add(d.AleoAmount)
+		}
+
+		var historyRate []model.LeoOverViewRateOfWeek
+		rates, err := myRouter.mydb.SelectHistoryOfRateOf1Week()
+		for _, r := range rates {
+			historyRate = append(historyRate, model.LeoOverViewRateOfWeek{
+				Rate: r.Rate,
+				At:   r.At,
+				Days: r.Days,
+			})
+		}
+		overviewData := model.LeoOverView{
+			TotalProvideLiquid:      totalLiquid.String(),
+			TotalLoaned:             totalLoaned.String(),
+			LiquidUsedRate:          useRate.String(),
+			ProvideLiquidRewardRate: "0.0003",
+			TotalDepositAleo:        totalDeposits.String(),
+			HistoryRate:             historyRate,
+		}
+		success := res.Success(overviewData)
 		context.JSON(success.Code, success)
 	}
 }
