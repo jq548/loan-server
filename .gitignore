@@ -3,3 +3,4 @@ go.sum
 generate.sh
 build.sh
 loan-server
+config.yaml

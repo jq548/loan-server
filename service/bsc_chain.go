@@ -96,7 +96,7 @@ func (s *BscChainService) GetLatestBlockOnChain() error {
 	return nil
 }
 
-func (s *BscChainService) getCallOpts() *bind.CallOpts {
+func (s *BscChainService) GetCallOpts() *bind.CallOpts {
 	return &bind.CallOpts{
 		Pending:     false,
 		From:        common.Address{},
@@ -105,7 +105,7 @@ func (s *BscChainService) getCallOpts() *bind.CallOpts {
 	}
 }
 
-func (s *BscChainService) getTransactOpts(pk string) (*bind.TransactOpts, error) {
+func (s *BscChainService) GetTransactOpts(pk string) (*bind.TransactOpts, error) {
 	privateKey, err := crypto.HexToECDSA(pk)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 		return err
 	}
 	zap.S().Infof("Filtered BSC Logs from:%v to:%v", filterQuery.FromBlock, filterQuery.ToBlock)
-	filterer, err := contract.NewContractFilterer(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	filterer, err := contract.NewLoanFilterer(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
 	}
@@ -147,7 +147,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 		}
 		for _, topic := range log.Topics {
 			switch topic.Hex() {
-			case "0xb2990d266ec4e479259ef8c68e87d6c03ab8dbafa4e785e79d2ed1545a383083":
+			case "0x8359c828396108eedea00704782ac2a600d822d6d56312c4e10f62408aedca5d":
 				params, err := filterer.ParseEventNewLoan(log)
 				if err != nil {
 					return err
@@ -205,7 +205,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0x467456fb7eb39617bb976fc80dbff34a252f7ef0f1887ebcca77c2caaac5704d":
+			case "0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9":
 				params, err := filterer.ParseEventReleaseLiquidReward(log)
 				if err != nil {
 					return err
@@ -219,7 +219,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0xc7f079bb1739a7fcb563479a77ec3ff5de5ba875b2b8b44d897abfc3ac58a8ed":
+			case "0x75780a70131ef5cf8aff25941e13a743681d34e1eb85abde44b32e09280e1fcc":
 				params, err := filterer.ParseEventProviderAdd(log)
 				if err != nil {
 					return err
@@ -234,7 +234,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0x89fe3f29313aa6c03800bc780dc2b251ec749edd116569f40bd397cf1e8e08c8":
+			case "0x1ec3add8915e0172b379ff4433663fbf4a45d4da64edb3e0402fb369e04b024a":
 				params, err := filterer.ParseEventProviderRedeem(log)
 				if err != nil {
 					return err
@@ -283,16 +283,16 @@ func (s *BscChainService) CreateLoanInContract(
 	duration,
 	interestAmount *big.Int,
 	loaner string) error {
-	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
 	}
-	loan, err := loanContract.Loans(s.getCallOpts(), id)
+	loan, err := loanContract.Loans(s.GetCallOpts(), id)
 	if err != nil {
 		return err
 	}
 	if utils.IsZeroAddress(loan.Loaner) {
-		opts, err := s.getTransactOpts(s.CallerPk)
+		opts, err := s.GetTransactOpts(s.CallerPk)
 		if err != nil {
 			return err
 		}
@@ -305,11 +305,11 @@ func (s *BscChainService) CreateLoanInContract(
 }
 
 func (s *BscChainService) ClearLoanInContract(loanId *big.Int) error {
-	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
 	}
-	opts, err := s.getTransactOpts(s.CallerPk)
+	opts, err := s.GetTransactOpts(s.CallerPk)
 	if err != nil {
 		return err
 	}
@@ -322,11 +322,11 @@ func (s *BscChainService) ClearLoanInContract(loanId *big.Int) error {
 }
 
 func (s *BscChainService) IncreaseLiquidReward(amount *big.Int, provider string) error {
-	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
 	}
-	opts, err := s.getTransactOpts(s.CallerPk)
+	opts, err := s.GetTransactOpts(s.CallerPk)
 	if err != nil {
 		return err
 	}
@@ -339,11 +339,11 @@ func (s *BscChainService) IncreaseLiquidReward(amount *big.Int, provider string)
 }
 
 func (s *BscChainService) CheckAddresses() error {
-	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
 	}
-	res, err := loanContract.Addresses(s.getCallOpts(), big.NewInt(0))
+	res, err := loanContract.Addresses(s.GetCallOpts(), big.NewInt(0))
 	if err != nil {
 		return err
 	}
@@ -357,11 +357,11 @@ func (s *BscChainService) IncreaseIncome(addresses []string, amounts []*big.Int)
 	for _, address := range addresses {
 		providers = append(providers, common.HexToAddress(address))
 	}
-	loanContract, err := contract.NewContract(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return "", err
 	}
-	opts, err := s.getTransactOpts(s.CallerPk)
+	opts, err := s.GetTransactOpts(s.CallerPk)
 	if err != nil {
 		return "", err
 	}
