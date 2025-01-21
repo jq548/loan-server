@@ -192,18 +192,21 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0x045492b29efb11990e42d3b9ba88978042183c94051194b886f8595139c64db9":
-				params, err := filterer.ParseEventIncreaseLiquidReward(log)
+			case "0xa16a887e0d16d473c5a8459cbf20c45ef7f0a282e60e60adcacb455ae31ebb62":
+				params, err := filterer.ParseEventIncreaseLiquidRewardBath(log)
 				if err != nil {
 					return err
 				}
-				err = s.Db.IncreaseProviderRewardAmount(
-					decimal.NewFromBigInt(params.Amount, 1),
-					params.Provider.Hex(),
-					log.TxHash.Hex(),
-					timestamp)
-				if err != nil {
-					return err
+				for i, id := range params.Ids {
+					err = s.Db.IncreaseProviderRewardAmount(
+						decimal.NewFromBigInt(params.Amounts[i], 1),
+						params.Providers[i].Hex(),
+						log.TxHash.Hex(),
+						timestamp,
+						int(id.Int64()))
+					if err != nil {
+						return err
+					}
 				}
 			case "0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9":
 				params, err := filterer.ParseEventReleaseLiquidReward(log)
@@ -230,7 +233,8 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.Start.Int64()),
 					params.Provider.Hex(),
 					log.TxHash.Hex(),
-					timestamp)
+					timestamp,
+					int(params.Id.Int64()))
 				if err != nil {
 					return err
 				}
@@ -244,6 +248,20 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					log.TxHash.Hex(),
 					timestamp,
 					decimal.NewFromBigInt(params.Fee, 1))
+				if err != nil {
+					return err
+				}
+			case "0x1a83ec821f4483d6557a8f7a974b0861f82494f76a8589611ab01a019489b491":
+				params, err := filterer.ParseEventExchangeLpToUsdt(log)
+				if err != nil {
+					return err
+				}
+				err = s.Db.SaveExchangeLpToUsdtRecord(
+					params.Forward,
+					decimal.NewFromBigInt(params.Amount, 1),
+					params.Caller.Hex(),
+					log.TxHash.Hex(),
+					timestamp)
 				if err != nil {
 					return err
 				}
@@ -352,7 +370,7 @@ func (s *BscChainService) CheckAddresses() error {
 	return nil
 }
 
-func (s *BscChainService) IncreaseIncome(addresses []string, amounts []*big.Int) (string, error) {
+func (s *BscChainService) IncreaseIncome(ids []*big.Int, addresses []string, amounts []*big.Int) (string, error) {
 	var providers []common.Address
 	for _, address := range addresses {
 		providers = append(providers, common.HexToAddress(address))
@@ -365,7 +383,7 @@ func (s *BscChainService) IncreaseIncome(addresses []string, amounts []*big.Int)
 	if err != nil {
 		return "", err
 	}
-	tx, err := loanContract.IncreaseLiquidRewardBatch(opts, amounts, providers)
+	tx, err := loanContract.IncreaseLiquidRewardBatch(opts, ids, amounts, providers)
 	if err != nil {
 		return "", err
 	}

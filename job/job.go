@@ -41,7 +41,7 @@ func (job *Job) StartJob(spec string, fun func()) {
 
 func (job *Job) StartFetchAleoPrice() {
 	zap.S().Info("StartFetchAleoPrice...")
-	fakePrice := float64(rand.Int()%500)/1000.0 + 0.5
+	fakePrice := float64(rand.Int()%500)/20.0 + 100
 	err := job.Db.SaveLatestAleoPrice(fakePrice)
 	if err != nil {
 		zap.S().Error(err)
@@ -102,12 +102,14 @@ func (job *Job) StartCalculateRate() {
 
 func (job *Job) StartCalculateIncome() {
 	zap.S().Info("StartCalculateIncome...")
+	var ids []*big.Int
 	var addresses []string
 	var amounts []*big.Int
 	platformIncome, err := job.Db.TotalIncomeLastDay(true)
 	if err != nil {
 		zap.S().Error(err)
 	}
+	ids = append(ids, big.NewInt(0))
 	addresses = append(addresses, job.PlatformReceiveAddress)
 	amounts = append(amounts, platformIncome.Mul(decimal.NewFromInt(consts.Wei)).BigInt())
 	providerIncome, err := job.Db.TotalIncomeLastDay(false)
@@ -127,16 +129,12 @@ func (job *Job) StartCalculateIncome() {
 		if !totalLiquid.Equal(decimal.Zero) {
 			amount = p.Amount.Div(totalLiquid).Mul(providerIncome)
 		}
-		index := indexOf(addresses, p.Provider)
-		if index == -1 {
-			addresses = append(addresses, p.Provider)
-			amounts = append(amounts, amount.BigInt())
-		} else {
-			amounts[index] = big.NewInt(0).Add(amounts[index], amount.BigInt())
-		}
+		ids = append(ids, big.NewInt(int64(p.RecordId)))
+		addresses = append(addresses, p.Provider)
+		amounts = append(amounts, amount.BigInt())
 	}
 
-	_, err = job.BscService.IncreaseIncome(addresses, amounts)
+	_, err = job.BscService.IncreaseIncome(ids, addresses, amounts)
 	if err != nil {
 		zap.S().Error(err)
 	}

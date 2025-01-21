@@ -11,6 +11,7 @@ type Cache struct {
 	CacheValue string
 }
 
+// loan data
 type Loan struct {
 	gorm.Model
 	AleoAddress       string          //
@@ -40,7 +41,7 @@ type Loan struct {
 	ReleaseAleoAmount decimal.Decimal // pay back release aleo amount
 }
 
-// include first and recharge
+// deposit data of loan, include first and recharge
 type Deposit struct {
 	gorm.Model
 	LoanId      uint
@@ -53,6 +54,7 @@ type Deposit struct {
 	Status      int // 0 save, 1 confirmed
 }
 
+// config of program
 type LoanConfig struct {
 	gorm.Model
 	Rate               decimal.Decimal
@@ -67,11 +69,13 @@ type LoanConfig struct {
 	PlatformIncomeRate decimal.Decimal
 }
 
+// images
 type ImageAssets struct {
 	gorm.Model
 	Url string
 }
 
+// provide liquid data
 type ProvideLiquid struct {
 	gorm.Model
 	Amount       decimal.Decimal
@@ -83,8 +87,10 @@ type ProvideLiquid struct {
 	CreateHash   string
 	RetrieveAt   int
 	RetrieveHash string
+	RecordId     int
 }
 
+// provide liquid reward data, write by caller, withdraw by provider
 type ProvideRewardRecord struct {
 	gorm.Model
 	Type       int // 0 increase, 1 withdraw
@@ -93,8 +99,29 @@ type ProvideRewardRecord struct {
 	Hash       string
 	At         int
 	SourceType int // 0 provide(provider), 1 loan(platform), 2 provider withdraw reward fee(platform), 3 provider release fee(platform)
+	RecordId   int
 }
 
+// for select
+type RewardRecordWithProvideInfo struct {
+	Type         int // 0 increase, 1 withdraw
+	Provider     string
+	Amount       decimal.Decimal
+	IncomeAmount decimal.Decimal
+	Hash         string
+	At           int
+	SourceType   int // 0 provide(provider), 1 loan(platform), 2 provider withdraw reward fee(platform), 3 provider release fee(platform)
+	RecordId     int
+	Duration     int
+	Start        int
+	Status       int // 0 normal, 1 retrieve
+	CreateAt     int
+	CreateHash   string
+	RetrieveAt   int
+	RetrieveHash string
+}
+
+// not used
 type ActionRecord struct {
 	gorm.Model
 	Type       int    // 0 create loan on bsc, 1 clear loan (bsc), 2 clear loan (sold aleo), 3 release aleo back, 4 update reward
@@ -103,12 +130,14 @@ type ActionRecord struct {
 	Hash       string // hash of transaction
 }
 
+// leo price update record
 type LeoPriceRecord struct {
 	gorm.Model
 	Price decimal.Decimal
 	At    int
 }
 
+// loan rate update record
 type LeoRateRecord struct {
 	gorm.Model
 	Rate decimal.Decimal
@@ -116,6 +145,7 @@ type LeoRateRecord struct {
 	Days int
 }
 
+// income create record, before split on morning
 type IncomeRecord struct {
 	gorm.Model
 	Amount     decimal.Decimal
@@ -125,4 +155,14 @@ type IncomeRecord struct {
 	SplitDays  int    //
 	EndAt      int    //
 	Hash       string // hash of create action
+}
+
+// exchange lp to usdt record
+type ExchangeRecord struct {
+	gorm.Model
+	Type    int // 1 lp to usdt, 2 usdt to lp
+	Amount  decimal.Decimal
+	Address string
+	At      int
+	Hash    string
 }

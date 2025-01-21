@@ -133,7 +133,8 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 	amount decimal.Decimal,
 	address string,
 	hash string,
-	at int) error {
+	at,
+	recordId int) error {
 
 	var rec []model.ProvideRewardRecord
 	tx := m.Db.Where(&model.ProvideRewardRecord{Hash: hash, Provider: address, Amount: amount}).Find(&rec)
@@ -145,6 +146,7 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 				Amount:   amount,
 				At:       at,
 				Hash:     hash,
+				RecordId: recordId,
 			}
 			tx := m.Db.Create(&record)
 			if tx.Error != nil {
@@ -200,7 +202,7 @@ func (m *MyDb) IncreaseProviderAmount(
 	start, duration int,
 	address string,
 	hash string,
-	at int) error {
+	at, recordId int) error {
 	tx := m.Db.Create(&model.ProvideLiquid{
 		Amount:     amount,
 		Duration:   duration,
@@ -209,6 +211,7 @@ func (m *MyDb) IncreaseProviderAmount(
 		Provider:   address,
 		CreateAt:   at,
 		CreateHash: hash,
+		RecordId:   recordId,
 	})
 	if tx.Error != nil {
 		return tx.Error
@@ -344,4 +347,75 @@ func (m *MyDb) SelectAllDepositsOfActiveLoans() ([]model.Deposit, error) {
 		return result, tx.Error
 	}
 	return result, nil
+}
+
+func (m *MyDb) SelectLoanByETHAddress(ethAddress string) ([]model.Loan, error) {
+	var loan []model.Loan
+	sqls := fmt.Sprintf("SELECT * FROM loan WHERE bsc_address=\"%s\" AND status>0", ethAddress)
+	tx := m.Db.Raw(sqls).Scan(&loan)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+	}
+	return loan, nil
+}
+
+func (m *MyDb) SaveExchangeLpToUsdtRecord(
+	forward bool,
+	amount decimal.Decimal,
+	address string,
+	hash string,
+	at int) error {
+	type_ := 2
+	if forward {
+		type_ = 1
+	}
+	tx := m.Db.Create(&model.ExchangeRecord{
+		Type:    type_,
+		Amount:  amount,
+		Address: address,
+		At:      at,
+		Hash:    hash,
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) SelectExchangeRecordByAddress(address string) ([]model.ExchangeRecord, error) {
+	var record []model.ExchangeRecord
+	sqls := fmt.Sprintf("SELECT * FROM exchange_record WHERE address=\"%s\"", address)
+	tx := m.Db.Raw(sqls).Scan(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+	}
+	return record, nil
+}
+
+func (m *MyDb) SelectProvideIncome(address string) ([]model.RewardRecordWithProvideInfo, error) {
+	var record []model.RewardRecordWithProvideInfo
+	sqls := fmt.Sprintf("SELECT provide_reward_record.*,provide_liquid.amount AS income_amount,provide_liquid.duration,provide_liquid.start,provide_liquid.status,provide_liquid.create_at,provide_liquid.create_hash,provide_liquid.retrieve_at,provide_liquid.retrieve_hash FROM provide_reward_record LEFT JOIN provide_liquid ON provide_reward_record.record_id=provide_liquid.record_id WHERE provide_reward_record.provider=\"%s\" AND provide_reward_record.type=0;", address)
+	tx := m.Db.Raw(sqls).Scan(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+	}
+	return record, nil
+}
+
+func (m *MyDb) SelectProvideIncomeWithdrawRecord(address string) ([]model.ProvideRewardRecord, error) {
+	var record []model.ProvideRewardRecord
+	sqls := fmt.Sprintf("SELECT * FROM provide_reward_record WHERE provider=\"%s\" AND type=1;", address)
+	tx := m.Db.Raw(sqls).Scan(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+	}
+	return record, nil
 }

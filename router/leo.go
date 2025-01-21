@@ -115,7 +115,7 @@ func calculateUsdt(myRouter *Router) gin.HandlerFunc {
 /*
 curl -X POST \
   -H "Content-Type: application/json" \
-  -d '{"aleo_address":"aleo1hac8kndgfp7eh545yeu6k2ue32yn3dt7qe5xl54d6lpe7xecyq9qkxc3tx", "aleo_amount":1000000, "bsc_address":"0x4332B66D46761476B0A50A2F12EE6a17DaCe7247", "email": "1140830756@qq.com", "stages": 2, "day_per_stage": 7, "type": 1}' \
+  -d '{"aleo_address":"aleo1hac8kndgfp7eh545yeu6k2ue32yn3dt7qe5xl54d6lpe7xecyq9qkxc3tx", "aleo_amount":2, "bsc_address":"0x4332B66D46761476B0A50A2F12EE6a17DaCe7247", "email": "1140830756@qq.com", "stages": 2, "day_per_stage": 7, "type": 1, "loan_type": 1}' \
   https://wings.tcds.ltd/leo/save_deposoit
 */
 // saveDeposit
