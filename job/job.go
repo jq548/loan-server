@@ -4,7 +4,6 @@ import (
 	"github.com/robfig/cron/v3"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
-	"loan-server/common/consts"
 	"loan-server/db"
 	"loan-server/model"
 	"loan-server/service"
@@ -111,7 +110,7 @@ func (job *Job) StartCalculateIncome() {
 	}
 	ids = append(ids, big.NewInt(0))
 	addresses = append(addresses, job.PlatformReceiveAddress)
-	amounts = append(amounts, platformIncome.Mul(decimal.NewFromInt(consts.Wei)).BigInt())
+	amounts = append(amounts, platformIncome.BigInt())
 	providerIncome, err := job.Db.TotalIncomeLastDay(false)
 	if err != nil {
 		zap.S().Error(err)
@@ -147,4 +146,28 @@ func indexOf(slice []string, target string) int {
 		}
 	}
 	return -1
+}
+
+func (job *Job) StartCalculateIncomeRate() {
+	zap.S().Info("StartCalculateIncomeRate...")
+	providerIncome, days, err := job.Db.TotalIncome30Day()
+	if err != nil {
+		zap.S().Error(err)
+	}
+	provideRecord, err := job.Db.ProvideLiquidRecords()
+	if err != nil {
+		zap.S().Error(err)
+	}
+	var totalLiquid decimal.Decimal
+	for _, p := range provideRecord {
+		totalLiquid = totalLiquid.Add(p.Amount)
+	}
+	rate := decimal.Zero
+	if totalLiquid != decimal.Zero {
+		rate = providerIncome.Div(totalLiquid).Mul(decimal.NewFromInt(365)).Div(decimal.NewFromInt(int64(days))).Mul(decimal.NewFromInt(100))
+	}
+	err = job.Db.SaveRecentRateOfProvideLiquidIncome(rate, days)
+	if err != nil {
+		zap.S().Error(err)
+	}
 }

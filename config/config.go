@@ -41,9 +41,10 @@ type Service struct {
 }
 
 type Job struct {
-	AleoPrice       string `yaml:"aleo_price"`
-	CalculateRate   string `yaml:"calculate_rate"`
-	CalculateIncome string `yaml:"calculate_income"`
+	AleoPrice               string `yaml:"aleo_price"`
+	CalculateRate           string `yaml:"calculate_rate"`
+	CalculateIncome         string `yaml:"calculate_income"`
+	CalculateIncomeYearRate string `yaml:"calculate_income_year_rate"`
 }
 
 type Log struct {

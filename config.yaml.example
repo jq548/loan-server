@@ -19,6 +19,7 @@ job:
   aleo_price: 0 * * * * ?
   calculate_rate: 0 0 0 * * ?
   calculate_income: 0 0 0 * * ?
+  calculate_income_year_rate: 0 0 1 * * ?
 log:
   level: debug
 platform:

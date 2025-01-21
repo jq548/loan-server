@@ -322,6 +322,31 @@ func (m *MyDb) TotalIncomeLastDay(isPlatform bool) (decimal.Decimal, error) {
 	return result.RoundDown(6), nil
 }
 
+func (m *MyDb) TotalIncome30Day() (decimal.Decimal, int, error) {
+	var result decimal.Decimal
+	var days = 0
+
+	now := time.Now()
+	beginOfToday := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Unix()
+	beginOfSearch := beginOfToday - 3600*24*30
+	sqls := fmt.Sprintf("SELECT * from provide_reward_record WHERE type=0 AND source_type=0 AND (at>%d AND at<%d)", beginOfSearch, beginOfToday)
+	var records []model.ProvideRewardRecord
+	tx := m.Db.Raw(sqls).Scan(&records)
+	if tx.Error != nil {
+		return result, days, tx.Error
+	}
+	var earliest = records[0].At
+	for _, record := range records {
+		result = result.Add(record.Amount.Mul(decimal.NewFromInt(1)))
+		if earliest > record.At {
+			earliest = record.At
+		}
+	}
+	days = int(int(beginOfToday)-earliest) / 3600 / 24
+
+	return result, days, nil
+}
+
 func (m *MyDb) ProvideLiquidRecords() ([]model.ProvideLiquid, error) {
 	var result []model.ProvideLiquid
 	tx := m.Db.Raw(`SELECT * from provide_liquid WHERE status=0`).Scan(&result)
@@ -418,4 +443,29 @@ func (m *MyDb) SelectProvideIncomeWithdrawRecord(address string) ([]model.Provid
 		}
 	}
 	return record, nil
+}
+
+func (m *MyDb) SelectRecentRateOfProvideLiquidIncome() ([]model.ProvideLiquidIncomeRateYear, error) {
+	var record []model.ProvideLiquidIncomeRateYear
+	sqls := fmt.Sprintf("SELECT * FROM provide_liquid_income_rate_year;")
+	tx := m.Db.Raw(sqls).Scan(&record)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return nil, gorm.ErrRecordNotFound
+		}
+	}
+	return record, nil
+}
+
+func (m *MyDb) SaveRecentRateOfProvideLiquidIncome(
+	rate decimal.Decimal,
+	at int) error {
+	tx := m.Db.Create(&model.ProvideLiquidIncomeRateYear{
+		Rate: rate,
+		At:   at,
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
 }

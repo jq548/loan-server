@@ -166,3 +166,10 @@ type ExchangeRecord struct {
 	At      int
 	Hash    string
 }
+
+// rate save every day
+type ProvideLiquidIncomeRateYear struct {
+	gorm.Model
+	Rate decimal.Decimal
+	At   int
+}

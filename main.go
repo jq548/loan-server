@@ -45,6 +45,7 @@ func main() {
 	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartFetchAleoPrice)
 	myJob.StartJob(cfg.Job.CalculateRate, myJob.StartCalculateRate)
 	myJob.StartJob(cfg.Job.CalculateIncome, myJob.StartCalculateIncome)
+	myJob.StartJob(cfg.Job.CalculateIncome, myJob.StartCalculateIncomeRate)
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)
