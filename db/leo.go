@@ -113,6 +113,20 @@ func (m *MyDb) NewDeposit(
 	return nil
 }
 
+func (m *MyDb) SaveCreateFailed(id, status int) error {
+	var loan model.Loan
+	tx := m.Db.First(&loan, id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	loan.Status = status
+	tx = m.Db.Save(&loan)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
 func (m *MyDb) SaveDepositHash(
 	hash string,
 	depositDbId uint,
@@ -211,13 +225,53 @@ func (m *MyDb) SelectDepositByLoanId(
 	return deposits, nil
 }
 
+func (m *MyDb) SaveHealthOfLoan(
+	loanId int, health decimal.Decimal) error {
+	var loan model.Loan
+	tx := m.Db.First(&loan, loanId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	loan.Health = health
+	tx = m.Db.Save(&loan)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) SaveStatusOfLoan(
+	loanId, status int) error {
+	var loan model.Loan
+	tx := m.Db.First(&loan, loanId)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	loan.Status = status
+	tx = m.Db.Save(&loan)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
 func (m *MyDb) UpdateReleaseAleoBack(
 	loaner,
 	hash string,
 	amount decimal.Decimal,
 	at int) error {
-	var loan model.Loan
+	var count int64
 	tx := m.Db.Where(&model.Loan{
+		PayBackHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count == 1 {
+		return nil
+	}
+	var loan model.Loan
+	tx = m.Db.Where(&model.Loan{
 		Status:      4,
 		PayBackHash: "",
 		AleoAddress: loaner,

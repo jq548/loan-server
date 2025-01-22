@@ -16,7 +16,7 @@ type Loan struct {
 	gorm.Model
 	AleoAddress       string          //
 	BscAddress        string          //
-	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared
+	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared, 6 release failed, 7 clear change state failed(contract), 8 clear sold failed, 9 clear calculate failed(income)
 	Stages            int             //
 	PayStages         int             //
 	DayPerStage       int             //
@@ -172,4 +172,14 @@ type ProvideLiquidIncomeRateYear struct {
 	gorm.Model
 	Rate decimal.Decimal
 	At   int
+}
+
+type IncomeGenerateRecord struct {
+	gorm.Model
+	Ids       string
+	Addresses string
+	Amounts   string
+	At        int
+	Hash      string
+	Status    int // 0 created, 1 transact success, 2 transact failed
 }

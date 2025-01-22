@@ -47,10 +47,20 @@ func (m *MyDb) SaveDepositOnBscHash(
 	start,
 	at int,
 	releaseAmount, interestAmount decimal.Decimal) error {
+	var count int64
+	tx := m.Db.Where(&model.Loan{
+		ReleaseHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
 	var loan model.Loan
 	var selector = model.Loan{}
 	selector.ID = uint(loanId)
-	tx := m.Db.Where(&selector).Last(&loan)
+	tx = m.Db.Where(&selector).Last(&loan)
 	if tx.Error != nil {
 		return gorm.ErrRecordNotFound
 	}
@@ -59,6 +69,7 @@ func (m *MyDb) SaveDepositOnBscHash(
 	loan.ReleaseAt = at
 	loan.ReleaseHash = hash
 	loan.ReleaseAmount = releaseAmount
+	loan.Status = 2
 
 	tx = m.Db.Save(&loan)
 	if tx.Error != nil {
@@ -84,8 +95,18 @@ func (m *MyDb) Payback(
 	hash string,
 	at int,
 	amount decimal.Decimal) error {
-	var loan model.Loan
+	var count int64
 	tx := m.Db.Where(&model.Loan{
+		PayBackHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
+	var loan model.Loan
+	tx = m.Db.Where(&model.Loan{
 		BscLoanId: loanId,
 	}).Last(&loan)
 	if tx.Error != nil {
@@ -109,8 +130,18 @@ func (m *MyDb) Clear(
 	hash string,
 	at int,
 	amount decimal.Decimal) error {
-	var loan model.Loan
+	var count int64
 	tx := m.Db.Where(&model.Loan{
+		PayBackHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
+	var loan model.Loan
+	tx = m.Db.Where(&model.Loan{
 		BscLoanId: loanId,
 	}).Last(&loan)
 	if tx.Error != nil {
@@ -137,7 +168,7 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 	recordId int) error {
 
 	var rec []model.ProvideRewardRecord
-	tx := m.Db.Where(&model.ProvideRewardRecord{Hash: hash, Provider: address, Amount: amount}).Find(&rec)
+	tx := m.Db.Where(&model.ProvideRewardRecord{Hash: hash, Type: 0}).Find(&rec)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			record := model.ProvideRewardRecord{
@@ -152,6 +183,7 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 			if tx.Error != nil {
 				return tx.Error
 			}
+			return nil
 		}
 		return tx.Error
 	}
@@ -165,7 +197,7 @@ func (m *MyDb) ReleaseProviderReward(
 	at int,
 	fee decimal.Decimal) error {
 	var rec []model.ProvideRewardRecord
-	tx := m.Db.Where(&model.ProvideRewardRecord{Hash: hash, Provider: address, Amount: amount}).Find(&rec)
+	tx := m.Db.Where(&model.ProvideRewardRecord{Hash: hash, Type: 1}).Find(&rec)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			record := model.ProvideRewardRecord{
@@ -179,8 +211,12 @@ func (m *MyDb) ReleaseProviderReward(
 			if tx.Error != nil {
 				return tx.Error
 			}
+		} else {
+			return tx.Error
 		}
-		return tx.Error
+	}
+	if len(rec) > 0 {
+		return nil
 	}
 	tx = m.Db.Create(&model.IncomeRecord{
 		Type:       2,
@@ -203,7 +239,17 @@ func (m *MyDb) IncreaseProviderAmount(
 	address string,
 	hash string,
 	at, recordId int) error {
-	tx := m.Db.Create(&model.ProvideLiquid{
+	var count int64
+	tx := m.Db.Where(&model.ProvideLiquid{
+		CreateHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
+	tx = m.Db.Create(&model.ProvideLiquid{
 		Amount:     amount,
 		Duration:   duration,
 		Start:      start,
@@ -224,10 +270,20 @@ func (m *MyDb) RetrieveProviderAmount(
 	hash string,
 	at int,
 	fee decimal.Decimal) error {
+	var count int64
+	tx := m.Db.Where(&model.ProvideLiquid{
+		RetrieveHash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
 	var pl model.ProvideLiquid
 	var selector = model.ProvideLiquid{}
 	selector.ID = uint(id)
-	tx := m.Db.Where(&selector).First(&pl)
+	tx = m.Db.Where(&selector).First(&pl)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -319,7 +375,7 @@ func (m *MyDb) TotalIncomeLastDay(isPlatform bool) (decimal.Decimal, error) {
 		}
 	}
 
-	return result.RoundDown(6), nil
+	return result.RoundDown(0), nil
 }
 
 func (m *MyDb) TotalIncome30Day() (decimal.Decimal, int, error) {
@@ -392,11 +448,21 @@ func (m *MyDb) SaveExchangeLpToUsdtRecord(
 	address string,
 	hash string,
 	at int) error {
+	var count int64
+	tx := m.Db.Where(&model.ExchangeRecord{
+		Hash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
 	type_ := 2
 	if forward {
 		type_ = 1
 	}
-	tx := m.Db.Create(&model.ExchangeRecord{
+	tx = m.Db.Create(&model.ExchangeRecord{
 		Type:    type_,
 		Amount:  amount,
 		Address: address,
@@ -447,7 +513,7 @@ func (m *MyDb) SelectProvideIncomeWithdrawRecord(address string) ([]model.Provid
 
 func (m *MyDb) SelectRecentRateOfProvideLiquidIncome() ([]model.ProvideLiquidIncomeRateYear, error) {
 	var record []model.ProvideLiquidIncomeRateYear
-	sqls := fmt.Sprintf("SELECT * FROM provide_liquid_income_rate_year;")
+	sqls := fmt.Sprintf("SELECT * FROM provide_liquid_income_rate_year ORDER BY at DESC LIMIT 1;")
 	tx := m.Db.Raw(sqls).Scan(&record)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
@@ -464,6 +530,51 @@ func (m *MyDb) SaveRecentRateOfProvideLiquidIncome(
 		Rate: rate,
 		At:   at,
 	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) NewIncomeGenerateRecord(
+	at, status int,
+	hash, ids, addresses, amounts string) error {
+	tx := m.Db.Create(&model.IncomeGenerateRecord{
+		At:        at,
+		Status:    status,
+		Hash:      hash,
+		Ids:       ids,
+		Addresses: addresses,
+		Amounts:   amounts,
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
+func (m *MyDb) SelectFailedIncomeGenerateRecord() ([]model.IncomeGenerateRecord, error) {
+	var results []model.IncomeGenerateRecord
+	sqls := fmt.Sprintf("SELECT * FROM income_generate_record WHERE status=2;")
+	tx := m.Db.Raw(sqls).Scan(&results)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return results, nil
+		}
+		return nil, tx.Error
+	}
+	return results, nil
+}
+
+func (m *MyDb) CompleteIncomeGenerateRecord(id int, hash string) error {
+	var record model.IncomeGenerateRecord
+	tx := m.Db.First(&record, "id=?", id)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	record.Status = 2
+	record.Hash = hash
+	tx = m.Db.Save(&record)
 	if tx.Error != nil {
 		return tx.Error
 	}

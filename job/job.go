@@ -1,9 +1,11 @@
 package job
 
 import (
+	"encoding/json"
 	"github.com/robfig/cron/v3"
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
+	"loan-server/common/consts"
 	"loan-server/db"
 	"loan-server/model"
 	"loan-server/service"
@@ -42,6 +44,10 @@ func (job *Job) StartFetchAleoPrice() {
 	zap.S().Info("StartFetchAleoPrice...")
 	fakePrice := float64(rand.Int()%500)/20.0 + 100
 	err := job.Db.SaveLatestAleoPrice(fakePrice)
+	if err != nil {
+		zap.S().Error(err)
+	}
+	err = job.updateLoanHealth()
 	if err != nil {
 		zap.S().Error(err)
 	}
@@ -102,15 +108,19 @@ func (job *Job) StartCalculateRate() {
 func (job *Job) StartCalculateIncome() {
 	zap.S().Info("StartCalculateIncome...")
 	var ids []*big.Int
+	var idsInt []int
 	var addresses []string
 	var amounts []*big.Int
+	var amountsStr []string
 	platformIncome, err := job.Db.TotalIncomeLastDay(true)
 	if err != nil {
 		zap.S().Error(err)
 	}
 	ids = append(ids, big.NewInt(0))
+	idsInt = append(idsInt, 0)
 	addresses = append(addresses, job.PlatformReceiveAddress)
 	amounts = append(amounts, platformIncome.BigInt())
+	amountsStr = append(amountsStr, platformIncome.String())
 	providerIncome, err := job.Db.TotalIncomeLastDay(false)
 	if err != nil {
 		zap.S().Error(err)
@@ -129,11 +139,37 @@ func (job *Job) StartCalculateIncome() {
 			amount = p.Amount.Div(totalLiquid).Mul(providerIncome)
 		}
 		ids = append(ids, big.NewInt(int64(p.RecordId)))
+		idsInt = append(idsInt, p.RecordId)
 		addresses = append(addresses, p.Provider)
 		amounts = append(amounts, amount.BigInt())
+		amountsStr = append(amountsStr, amount.String())
 	}
 
-	_, err = job.BscService.IncreaseIncome(ids, addresses, amounts)
+	status := 1
+	hash, err := job.BscService.IncreaseIncome(ids, addresses, amounts)
+	if err != nil {
+		zap.S().Error(err)
+		status = 2
+	}
+	idsjson, err := json.Marshal(ids)
+	if err != nil {
+		zap.S().Error(err)
+	}
+	addressesjson, err := json.Marshal(addresses)
+	if err != nil {
+		zap.S().Error(err)
+	}
+	amountsjson, err := json.Marshal(amountsStr)
+	if err != nil {
+		zap.S().Error(err)
+	}
+	err = job.Db.NewIncomeGenerateRecord(
+		int(time.Now().Unix()),
+		status,
+		hash,
+		string(idsjson),
+		string(addressesjson),
+		string(amountsjson))
 	if err != nil {
 		zap.S().Error(err)
 	}
@@ -170,4 +206,128 @@ func (job *Job) StartCalculateIncomeRate() {
 	if err != nil {
 		zap.S().Error(err)
 	}
+}
+
+func (job *Job) CheckFailedJobs() {
+	zap.S().Info("CheckFailedJobs...")
+	// income
+	job.checkIncreaseIncome()
+	// loan
+	job.checkCreateLoan()
+	// clear contract
+	job.checkClearLoanOnContract()
+	// clear sold
+	job.checkClearLoanSold()
+	// clear finish
+	job.checkClearLoanFinish()
+}
+
+func (job *Job) updateLoanHealth() error {
+	price, err := job.Db.GetLatestPrice()
+	if err != nil {
+		return err
+	}
+	loans, err := job.Db.SelectAllActiveLoans()
+	if err != nil {
+		return err
+	}
+	for _, loan := range loans {
+		orgValue := decimal.Zero
+		aleoAmount := decimal.Zero
+		deposits, err := job.Db.SelectDepositByLoanId(int(loan.ID))
+		if err != nil {
+			return err
+		}
+		for _, deposit := range deposits {
+			orgValue = orgValue.Add(deposit.UsdtValue)
+			aleoAmount = aleoAmount.Add(deposit.AleoAmount)
+		}
+		nowValue := decimal.NewFromFloat(price).Mul(aleoAmount.Div(decimal.NewFromInt(1000000))).Mul(decimal.NewFromInt(consts.Wei))
+		loan.Health = nowValue.Div(orgValue)
+		err = job.Db.SaveHealthOfLoan(int(loan.ID), loan.Health)
+		if err != nil {
+			return err
+		}
+		if loan.Health.LessThan(decimal.NewFromFloat(0.7)) {
+			status := 5
+			err := job.BscService.ClearLoanInContract(big.NewInt(int64(loan.ID)))
+			if err != nil {
+				zap.S().Error(err)
+				status = 6
+			}
+			err = job.Db.SaveStatusOfLoan(int(loan.ID), status)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (job *Job) checkIncreaseIncome() {
+	failedSaveRecentRateIncome, err := job.Db.SelectFailedIncomeGenerateRecord()
+	if err != nil {
+		zap.S().Error(err)
+	}
+	for _, record := range failedSaveRecentRateIncome {
+		var ids []*big.Int
+		var idsInt []int
+		var addresses []string
+		var amounts []*big.Int
+		var amountsStr []string
+		err := json.Unmarshal([]byte(record.Ids), &idsInt)
+		if err != nil {
+			zap.S().Error(err)
+			continue
+		}
+		for _, id := range idsInt {
+			ids = append(ids, big.NewInt(int64(id)))
+		}
+		err = json.Unmarshal([]byte(record.Addresses), &addresses)
+		if err != nil {
+			zap.S().Error(err)
+			continue
+		}
+		err = json.Unmarshal([]byte(record.Amounts), &amountsStr)
+		if err != nil {
+			zap.S().Error(err)
+			continue
+		}
+
+		for _, amount := range amountsStr {
+			tmp := new(big.Int)
+			a, success := tmp.SetString(amount, 10)
+			if !success {
+				continue
+			}
+			amounts = append(amounts, a)
+		}
+
+		hash, err := job.BscService.IncreaseIncome(ids, addresses, amounts)
+		if err != nil {
+			zap.S().Error(err)
+			continue
+		}
+		err = job.Db.CompleteIncomeGenerateRecord(int(record.ID), hash)
+		if err != nil {
+			zap.S().Error(err)
+			continue
+		}
+	}
+}
+
+func (job *Job) checkCreateLoan() {
+
+}
+
+func (job *Job) checkClearLoanOnContract() {
+
+}
+
+func (job *Job) checkClearLoanSold() {
+
+}
+
+func (job *Job) checkClearLoanFinish() {
+
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"io/ioutil"
+	"loan-server/common/consts"
 	"loan-server/config"
 	"loan-server/db"
 	"loan-server/model"
@@ -193,6 +194,9 @@ func (s *LeoChainService) SaveBlockTransaction(
 			return err
 		}
 		if len(deposit) > 0 {
+			if deposit[0].Hash == txId {
+				return nil
+			}
 			sloan, err := s.Db.SelectLoanById(deposit[0].LoanId)
 			if err != nil {
 				return err
@@ -213,9 +217,14 @@ func (s *LeoChainService) SaveBlockTransaction(
 					interestAmount.BigInt(),
 					loan.BscAddress)
 				if err != nil {
-					return err
+					zap.S().Error(err)
+					err = s.Db.SaveCreateFailed(int(loan.ID), 6)
+					if err != nil {
+						return err
+					}
 				}
 			}
+			return nil
 		}
 	}
 
@@ -261,7 +270,7 @@ func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64, stages, perDay 
 		}
 	}
 	rate = rate.Mul(decimal.NewFromInt(int64(stages)))
-	usdtAmount := decimal.NewFromInt(aleoAmount).Mul(decimal.NewFromFloat(price * 1000000000000000000))
-	interestAmount := usdtAmount.Mul(decimal.NewFromInt(1).Sub(rate))
+	usdtAmount := decimal.NewFromInt(aleoAmount).Div(decimal.NewFromInt(1000000)).Mul(decimal.NewFromFloat(price).Mul(decimal.NewFromInt(consts.Wei)))
+	interestAmount := usdtAmount.Mul(rate)
 	return usdtAmount, interestAmount, nil
 }

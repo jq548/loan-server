@@ -45,6 +45,7 @@ type Job struct {
 	CalculateRate           string `yaml:"calculate_rate"`
 	CalculateIncome         string `yaml:"calculate_income"`
 	CalculateIncomeYearRate string `yaml:"calculate_income_year_rate"`
+	CheckFailedJobs         string `json:"check_failed_jobs"`
 }
 
 type Log struct {

@@ -23,31 +23,28 @@ func (myRouter *Router) loadBscRouters(engine *gin.Engine) {
 func bscConfig(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
 		var provideConfigs []model.BscConfigProvideLiquid
-		provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
-			Duration:         3600 * 24 * 7,
-			Days:             7,
-			EstimateWeekRate: 0.005,
-		})
-		provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
-			Duration:         3600 * 24 * 30,
-			Days:             30,
-			EstimateWeekRate: 0.0052,
-		})
-		provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
-			Duration:         3600 * 24 * 60,
-			Days:             60,
-			EstimateWeekRate: 0.0056,
-		})
-		provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
-			Duration:         3600 * 24 * 90,
-			Days:             90,
-			EstimateWeekRate: 0.0058,
-		})
-		provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
-			Duration:         3600 * 24 * 180,
-			Days:             180,
-			EstimateWeekRate: 0.006,
-		})
+		days := []int{
+			7, 30, 60, 90, 180,
+		}
+		factor := []float32{
+			0.8, 1, 1.2, 1.4, 1.6,
+		}
+		rates, err := myRouter.mydb.SelectRecentRateOfProvideLiquidIncome()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate := decimal.Zero
+		if len(rates) > 0 {
+			rate = rates[0].Rate
+		}
+		rate = rate.Div(decimal.NewFromFloat(365))
+		for i, d := range days {
+			provideConfigs = append(provideConfigs, model.BscConfigProvideLiquid{
+				Duration:         3600 * 24 * d,
+				Days:             d,
+				EstimateWeekRate: float32(rate.Mul(decimal.NewFromFloat(float64(factor[i]))).RoundDown(6).InexactFloat64()),
+			})
+		}
 		cfg := model.BscConfig{
 			WithdrawIncomeFee:  "1",
 			WithdrawProvideFee: "2",
@@ -57,6 +54,22 @@ func bscConfig(myRouter *Router) gin.HandlerFunc {
 		}
 		success := res.Success(cfg)
 		context.JSON(success.Code, success)
+	}
+}
+func getFactorOfDay(day int) float64 {
+	switch day {
+	case 7:
+		return 0.8
+	case 30:
+		return 1
+	case 60:
+		return 1.2
+	case 90:
+		return 1.4
+	case 180:
+		return 1.6
+	default:
+		return 1
 	}
 }
 
@@ -69,6 +82,15 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 		if !utils.IsValidAddress(address) {
 			panic(errors.New(errors.ParameterError))
 		}
+		rates, err := myRouter.mydb.SelectRecentRateOfProvideLiquidIncome()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate := decimal.Zero
+		if len(rates) > 0 {
+			rate = rates[0].Rate
+		}
+
 		totalProvide := decimal.NewFromInt(0)
 		income30 := decimal.NewFromInt(0)
 		incomeYesterday := decimal.NewFromInt(0)
@@ -98,9 +120,9 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 			}
 			if index == -1 {
 				newRecord := model.BscProvideRecord{
-					Days:           income.Duration / 24 / 2600,
+					Days:           income.Duration / 24 / 3600,
 					Amount:         income.Amount.Div(decimal.NewFromInt(consts.Wei)).String(),
-					RateYear:       "0",
+					RateYear:       decimal.NewFromFloat(getFactorOfDay(income.Duration / 24 / 3600)).Mul(rate).String(),
 					TotalIncomeDec: income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei)),
 					Duration:       income.Duration,
 					Start:          income.Start,
