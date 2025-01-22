@@ -160,7 +160,8 @@ func saveDeposit(myRouter *Router) gin.HandlerFunc {
 			params.Email,
 			intAmount,
 			params.Stages,
-			params.DayPerStage)
+			params.DayPerStage,
+			config.ReleaseRate)
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}

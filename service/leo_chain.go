@@ -201,11 +201,11 @@ func (s *LeoChainService) SaveBlockTransaction(
 			if err != nil {
 				return err
 			}
-			loanAmount, interestAmount, err := s.CalculateReleaseUsdt(parseInt, sloan.Stages, sloan.DayPerStage)
+			loanAmount, interestAmount, price, rate, err := s.CalculateReleaseUsdt(parseInt, sloan.Stages, sloan.DayPerStage, sloan.ReleaseRate)
 			if err != nil {
 				return err
 			}
-			loan, err := s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime, loanAmount, interestAmount)
+			loan, err := s.Db.SaveDepositHash(txId, deposit[0].ID, blockTime, loanAmount, interestAmount, price, rate)
 			if err != nil {
 				return err
 			}
@@ -253,14 +253,14 @@ func (s *LeoChainService) PayBackLoan(to, amount string) error {
 	return nil
 }
 
-func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64, stages, perDay int) (decimal.Decimal, decimal.Decimal, error) {
+func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64, stages, perDay int, releaseRate decimal.Decimal) (decimal.Decimal, decimal.Decimal, decimal.Decimal, decimal.Decimal, error) {
 	price, err := s.Db.GetLatestPrice()
 	if err != nil {
-		return decimal.NewFromInt(0), decimal.NewFromInt(0), err
+		return decimal.NewFromInt(0), decimal.NewFromInt(0), decimal.NewFromInt(0), decimal.NewFromInt(0), err
 	}
 	rates, err := s.Db.GetLatestRateOfWeek()
 	if err != nil {
-		return decimal.NewFromInt(0), decimal.NewFromInt(0), err
+		return decimal.NewFromInt(0), decimal.NewFromInt(0), decimal.NewFromInt(0), decimal.NewFromInt(0), err
 	}
 	rate := rates[0].Rate
 	for _, r := range rates {
@@ -270,7 +270,8 @@ func (s *LeoChainService) CalculateReleaseUsdt(aleoAmount int64, stages, perDay 
 		}
 	}
 	rate = rate.Mul(decimal.NewFromInt(int64(stages)))
-	usdtAmount := decimal.NewFromInt(aleoAmount).Div(decimal.NewFromInt(1000000)).Mul(decimal.NewFromFloat(price).Mul(decimal.NewFromInt(consts.Wei)))
+	aleoA := decimal.NewFromInt(aleoAmount).Div(decimal.NewFromInt(1000000))
+	usdtAmount := aleoA.Mul(decimal.NewFromFloat(price).Mul(decimal.NewFromInt(consts.Wei))).Mul(releaseRate)
 	interestAmount := usdtAmount.Mul(rate)
-	return usdtAmount, interestAmount, nil
+	return usdtAmount, interestAmount, decimal.NewFromFloat(price), rate, nil
 }

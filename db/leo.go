@@ -48,44 +48,13 @@ func (m *MyDb) SaveLeoBlockHeight(height int) error {
 	return nil
 }
 
-//func (m *MyDb) NewLoan(
-//	aleoAddress,
-//	bscAddress,
-//	email string,
-//	stages,
-//	dayPerStage,
-//	type_ int,
-//	startAt time.Time,
-//	rate,
-//	releaseRate float32) error {
-//	loan := &model.Loan{
-//		AleoAddress: aleoAddress,
-//		BscAddress:  bscAddress,
-//		Status:      0,
-//		Stages:      stages,
-//		PayStages:   0,
-//		DayPerStage: dayPerStage,
-//		StartAt:     startAt,
-//		Health:      decimal.NewFromInt(1),
-//		Rate:        decimal.NewFromFloat32(rate),
-//		ReleaseRate: decimal.NewFromFloat32(releaseRate),
-//		Hash:        "",
-//		Type:        type_,
-//		Email:       email,
-//	}
-//	tx := m.Db.Create(&loan)
-//	if tx.Error != nil {
-//		return tx.Error
-//	}
-//	return nil
-//}
-
 func (m *MyDb) NewDeposit(
 	aleoAddress,
 	bscAddress,
 	email string,
 	aleoAmount int64,
-	stages, dayPerStage int) error {
+	stages, dayPerStage int,
+	releaseRate decimal.Decimal) error {
 	loan := &model.Loan{
 		AleoAddress:    aleoAddress,
 		BscAddress:     bscAddress,
@@ -93,7 +62,8 @@ func (m *MyDb) NewDeposit(
 		Email:          email,
 		Stages:         stages,
 		DayPerStage:    dayPerStage,
-		InterestAmount: decimal.NewFromInt(18),
+		InterestAmount: decimal.NewFromInt(0),
+		ReleaseRate:    releaseRate,
 	}
 	tx := m.Db.Create(&loan)
 	if tx.Error != nil {
@@ -132,7 +102,7 @@ func (m *MyDb) SaveDepositHash(
 	depositDbId uint,
 	at int,
 	loanAmount,
-	interestAmount decimal.Decimal) (*model.Loan, error) {
+	interestAmount, price, rate decimal.Decimal) (*model.Loan, error) {
 	var deposit model.Deposit
 	var selector = model.Deposit{}
 	selector.ID = depositDbId
@@ -146,6 +116,7 @@ func (m *MyDb) SaveDepositHash(
 	deposit.Status = 1
 	deposit.At = at
 	deposit.UsdtValue = loanAmount
+	deposit.AleoPrice = price
 	tx = m.Db.Save(&deposit)
 	if tx.Error != nil {
 		return nil, tx.Error
@@ -155,6 +126,8 @@ func (m *MyDb) SaveDepositHash(
 		ID: deposit.LoanId,
 	}).Find(&loan)
 	if loan.Status == 0 {
+		loan.Type = 1
+		loan.Rate = rate
 		loan.Status = 1
 		loan.StartAt = at
 		loan.LoanAmount = loanAmount
