@@ -161,11 +161,8 @@ func (m *MyDb) SelectLoan(
 func (m *MyDb) SelectUnConfirmDepositByAddress(
 	aleoAddress string, amount int64) ([]model.Deposit, error) {
 	var deposits []model.Deposit
-	tx := m.Db.Model(&model.Deposit{}).Where(&model.Deposit{
-		AleoAddress: aleoAddress,
-		Status:      0,
-		AleoAmount:  decimal.NewFromInt(amount),
-	}).Find(&deposits)
+	sqls := fmt.Sprintf("SELECT * FROM deposit WHERE status=0 AND hash=\"\" AND aleo_address=\"%s\" AND aleo_amount=%d ORDER BY id DESC;", aleoAddress, amount)
+	tx := m.Db.Raw(sqls).Scan(&deposits)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return deposits, nil
@@ -242,21 +239,21 @@ func (m *MyDb) UpdateReleaseAleoBack(
 	if count == 1 {
 		return nil
 	}
-	var loan model.Loan
-	tx = m.Db.Model(&model.Loan{}).Where(&model.Loan{
-		Status:      4,
-		PayBackHash: "",
-		AleoAddress: loaner,
-	}).Last(&loan)
+	var loans []model.Loan
+	sqls := fmt.Sprintf("SELECT * FROM loan WHERE pay_back_hash=\"\" AND status=4 AND address=\"%s\"", loaner)
+	tx = m.Db.Raw(sqls).Scan(loans)
 	if tx.Error != nil {
 		return tx.Error
 	}
-	loan.PayBackAt = at
-	loan.PayBackHash = hash
-	loan.PayBackAmount = amount
-	tx = m.Db.Save(&loan)
-	if tx.Error != nil {
-		return tx.Error
+	if len(loans) > 0 {
+		loan := loans[0]
+		loan.PayBackAt = at
+		loan.PayBackHash = hash
+		loan.PayBackAmount = amount
+		tx = m.Db.Save(&loan)
+		if tx.Error != nil {
+			return tx.Error
+		}
 	}
 	return nil
 }

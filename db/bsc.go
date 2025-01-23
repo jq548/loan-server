@@ -168,7 +168,8 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 	recordId int) error {
 
 	var rec []model.ProvideRewardRecord
-	tx := m.Db.Model(&model.ProvideRewardRecord{}).Where(&model.ProvideRewardRecord{Hash: hash, Type: 0}).Find(&rec)
+	sqls := fmt.Sprintf("SELECT * from provide_reward_record WHERE hash=\"%s\" AND type=0;", hash)
+	tx := m.Db.Raw(sqls).Scan(&rec)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			record := model.ProvideRewardRecord{
