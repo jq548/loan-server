@@ -111,6 +111,7 @@ func (m *MyDb) SaveDepositHash(
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound
 		}
+		return nil, tx.Error
 	}
 	deposit.Hash = hash
 	deposit.Status = 1
@@ -152,6 +153,7 @@ func (m *MyDb) SelectLoan(
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound
 		}
+		return nil, tx.Error
 	}
 	return loan, nil
 }
@@ -168,6 +170,7 @@ func (m *MyDb) SelectUnConfirmDepositByAddress(
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return deposits, nil
 		}
+		return nil, tx.Error
 	}
 	return deposits, nil
 }
@@ -178,9 +181,7 @@ func (m *MyDb) SelectDepositByAddress(
 	sqls := fmt.Sprintf("SELECT * FROM deposit WHERE aleo_address=\"%s\" AND status>0", aleoAddress)
 	tx := m.Db.Raw(sqls).Scan(&deposits)
 	if tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, gorm.ErrRecordNotFound
-		}
+		return nil, gorm.ErrRecordNotFound
 	}
 	return deposits, nil
 }
@@ -191,9 +192,7 @@ func (m *MyDb) SelectDepositByLoanId(
 	sqls := fmt.Sprintf("SELECT * FROM deposit WHERE loan_id=%d AND status>0", loanId)
 	tx := m.Db.Raw(sqls).Scan(&deposits)
 	if tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, gorm.ErrRecordNotFound
-		}
+		return nil, gorm.ErrRecordNotFound
 	}
 	return deposits, nil
 }
@@ -269,6 +268,7 @@ func (m *MyDb) GetLatestPrice() (float64, error) {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return 0, nil
 		}
+		return 0, tx.Error
 	}
 	res := record.Price.InexactFloat64()
 	return res, nil
@@ -281,8 +281,21 @@ func (m *MyDb) GetLatestRateOfWeek() ([]model.LeoRateRecord, error) {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return record, nil
 		}
+		return nil, tx.Error
 	}
 	return record, nil
+}
+
+func (m *MyDb) GetBanners() ([]model.ImageAssets, error) {
+	var assets []model.ImageAssets
+	tx := m.Db.Find(&assets)
+	if tx.Error != nil {
+		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
+			return assets, nil
+		}
+		return nil, tx.Error
+	}
+	return assets, nil
 }
 
 func (m *MyDb) SelectHistoryOfRateOf1Week() ([]model.LeoRateRecord, error) {
@@ -327,6 +340,7 @@ func (m *MyDb) SelectLoanById(loanId uint) (*model.Loan, error) {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
+		return nil, tx.Error
 	}
 	return &loan, nil
 }

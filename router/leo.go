@@ -9,6 +9,7 @@ import (
 	"loan-server/common/utils"
 	"loan-server/model"
 	"strconv"
+	"strings"
 )
 
 func (myRouter *Router) loadLeoRouters(engine *gin.Engine) {
@@ -34,13 +35,28 @@ func loanConfig(myRouter *Router) gin.HandlerFunc {
 		if err != nil {
 			panic(errors.New(errors.SystemError))
 		}
+		var bannerList []string
+		banners, err := myRouter.mydb.GetBanners()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		ids := strings.Split(config.BannerIds, ",")
+		for _, banner := range banners {
+			for _, id := range ids {
+				if strconv.Itoa(int(banner.ID)) == id {
+					bannerList = append(bannerList, banner.Url)
+					break
+				}
+			}
+		}
+
 		resCfg := model.LeoResConfig{
 			Rate:           rates[0].Rate.String(),
 			AvailableStage: config.AvailableStages,
 			DayPerStage:    config.DayPerStage,
 			Price:          strconv.FormatFloat(price, 'f', 6, 64),
 			AllowTypes:     "1",
-			Banners:        []string{},
+			Banners:        bannerList,
 			MinAmount:      config.MinLoanAmount / 1000000,
 			MaxAmount:      config.MaxLoanAmount / 1000000,
 		}
@@ -282,14 +298,45 @@ func overview(myRouter *Router) gin.HandlerFunc {
 				Days: r.Days,
 			})
 		}
+		// banner
+		config, err := myRouter.mydb.GetConfig()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		var bannerList []string
+		banners, err := myRouter.mydb.GetBanners()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		ids := strings.Split(config.BannerIds, ",")
+		for _, banner := range banners {
+			for _, id := range ids {
+				if strconv.Itoa(int(banner.ID)) == id {
+					bannerList = append(bannerList, banner.Url)
+					break
+				}
+			}
+		}
+		// calculate income rate
+
+		incomeRates, err := myRouter.mydb.SelectRecentRateOfProvideLiquidIncome()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
+		rate := decimal.Zero
+		if len(incomeRates) > 0 {
+			rate = incomeRates[0].Rate
+		}
+		rate = rate.Div(decimal.NewFromFloat(365))
+		estimateRate := rate.Mul(decimal.NewFromFloat(1.6)).RoundDown(6)
 		overviewData := model.LeoOverView{
 			TotalProvideLiquid:      totalLiquid.String(),
 			TotalLoaned:             totalLoaned.String(),
 			LiquidUsedRate:          useRate.String(),
-			ProvideLiquidRewardRate: "0.0003",
+			ProvideLiquidRewardRate: estimateRate.String(),
 			TotalDepositAleo:        totalDeposits.String(),
 			HistoryRate:             historyRate,
-			Banners:                 []string{},
+			Banners:                 bannerList,
 		}
 		success := res.Success(overviewData)
 		context.JSON(success.Code, success)

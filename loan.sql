@@ -11,7 +11,7 @@
  Target Server Version : 90100 (9.1.0)
  File Encoding         : 65001
 
- Date: 18/01/2025 17:37:26
+ Date: 23/01/2025 13:27:51
 */
 
 SET NAMES utf8mb4;
@@ -29,7 +29,7 @@ CREATE TABLE `cache` (
   `cache_key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cache_value` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for deposit
@@ -49,7 +49,24 @@ CREATE TABLE `deposit` (
   `at` int DEFAULT NULL,
   `status` int DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Table structure for exchange_record
+-- ----------------------------
+DROP TABLE IF EXISTS `exchange_record`;
+CREATE TABLE `exchange_record` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `type` int DEFAULT NULL,
+  `amount` decimal(30,0) DEFAULT NULL,
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `at` int DEFAULT NULL,
+  `hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for gorm_templete
@@ -74,7 +91,25 @@ CREATE TABLE `image_assets` (
   `deleted_at` datetime DEFAULT NULL,
   `url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ----------------------------
+-- Table structure for income_generate_record
+-- ----------------------------
+DROP TABLE IF EXISTS `income_generate_record`;
+CREATE TABLE `income_generate_record` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `deleted_at` datetime DEFAULT NULL,
+  `ids` text COLLATE utf8mb4_unicode_ci,
+  `addresses` text COLLATE utf8mb4_unicode_ci,
+  `amounts` text COLLATE utf8mb4_unicode_ci,
+  `at` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for income_record
@@ -93,7 +128,7 @@ CREATE TABLE `income_record` (
   `end_at` int DEFAULT NULL,
   `hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for leo_price_record
@@ -107,7 +142,7 @@ CREATE TABLE `leo_price_record` (
   `price` decimal(18,6) DEFAULT NULL,
   `at` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for leo_rate_record
@@ -122,7 +157,7 @@ CREATE TABLE `leo_rate_record` (
   `at` int DEFAULT NULL,
   `days` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=118 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for loan
@@ -147,6 +182,7 @@ CREATE TABLE `loan` (
   `type` int DEFAULT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `bsc_loan_id` int DEFAULT NULL,
+  `loan_amount` decimal(30,0) DEFAULT NULL,
   `release_at` int DEFAULT NULL,
   `release_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `release_amount` decimal(30,0) DEFAULT NULL,
@@ -158,7 +194,7 @@ CREATE TABLE `loan` (
   `release_aleo_at` int DEFAULT NULL,
   `release_aleo_amount` decimal(18,0) DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for loan_config
@@ -180,7 +216,7 @@ CREATE TABLE `loan_config` (
   `max_loan_amount` decimal(18,0) DEFAULT NULL,
   `platform_income_rate` decimal(10,6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for provide_liquid
@@ -200,25 +236,23 @@ CREATE TABLE `provide_liquid` (
   `create_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `retrieve_at` int DEFAULT NULL,
   `retrieve_hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `record_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
--- Table structure for provide_record
+-- Table structure for provide_liquid_income_rate_year
 -- ----------------------------
-DROP TABLE IF EXISTS `provide_record`;
-CREATE TABLE `provide_record` (
+DROP TABLE IF EXISTS `provide_liquid_income_rate_year`;
+CREATE TABLE `provide_liquid_income_rate_year` (
   `id` int NOT NULL AUTO_INCREMENT,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   `deleted_at` datetime DEFAULT NULL,
-  `type` int DEFAULT NULL,
-  `provider` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `amount` decimal(30,0) DEFAULT NULL,
-  `hash` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rate` decimal(18,6) DEFAULT NULL,
   `at` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ----------------------------
 -- Table structure for provide_reward_record
@@ -235,7 +269,8 @@ CREATE TABLE `provide_reward_record` (
   `hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `at` int DEFAULT NULL,
   `source_type` int DEFAULT NULL,
+  `record_id` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
