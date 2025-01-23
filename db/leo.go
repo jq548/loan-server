@@ -106,7 +106,7 @@ func (m *MyDb) SaveDepositHash(
 	var deposit model.Deposit
 	var selector = model.Deposit{}
 	selector.ID = depositDbId
-	tx := m.Db.Where(&selector).Find(&deposit)
+	tx := m.Db.Model(&model.Deposit{}).Where(&selector).Find(&deposit)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, gorm.ErrRecordNotFound
@@ -123,7 +123,7 @@ func (m *MyDb) SaveDepositHash(
 		return nil, tx.Error
 	}
 	var loan model.Loan
-	tx = m.Db.Where(&gorm.Model{
+	tx = m.Db.Model(&model.Loan{}).Where(&gorm.Model{
 		ID: deposit.LoanId,
 	}).Find(&loan)
 	if loan.Status == 0 {
@@ -161,7 +161,7 @@ func (m *MyDb) SelectLoan(
 func (m *MyDb) SelectUnConfirmDepositByAddress(
 	aleoAddress string, amount int64) ([]model.Deposit, error) {
 	var deposits []model.Deposit
-	tx := m.Db.Where(&model.Deposit{
+	tx := m.Db.Model(&model.Deposit{}).Where(&model.Deposit{
 		AleoAddress: aleoAddress,
 		Status:      0,
 		AleoAmount:  decimal.NewFromInt(amount),
@@ -200,7 +200,7 @@ func (m *MyDb) SelectDepositByLoanId(
 func (m *MyDb) SaveHealthOfLoan(
 	loanId int, health decimal.Decimal) error {
 	var loan model.Loan
-	tx := m.Db.First(&loan, loanId)
+	tx := m.Db.Model(&model.Loan{}).First(&loan, loanId)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -215,7 +215,7 @@ func (m *MyDb) SaveHealthOfLoan(
 func (m *MyDb) SaveStatusOfLoan(
 	loanId, status int) error {
 	var loan model.Loan
-	tx := m.Db.First(&loan, loanId)
+	tx := m.Db.Model(&model.Loan{}).First(&loan, loanId)
 	if tx.Error != nil {
 		return tx.Error
 	}
@@ -233,7 +233,7 @@ func (m *MyDb) UpdateReleaseAleoBack(
 	amount decimal.Decimal,
 	at int) error {
 	var count int64
-	tx := m.Db.Where(&model.Loan{
+	tx := m.Db.Model(&model.Loan{}).Where(&model.Loan{
 		PayBackHash: hash,
 	}).Count(&count)
 	if tx.Error != nil {
@@ -243,7 +243,7 @@ func (m *MyDb) UpdateReleaseAleoBack(
 		return nil
 	}
 	var loan model.Loan
-	tx = m.Db.Where(&model.Loan{
+	tx = m.Db.Model(&model.Loan{}).Where(&model.Loan{
 		Status:      4,
 		PayBackHash: "",
 		AleoAddress: loaner,
@@ -263,7 +263,7 @@ func (m *MyDb) UpdateReleaseAleoBack(
 
 func (m *MyDb) GetLatestPrice() (float64, error) {
 	var record model.LeoPriceRecord
-	tx := m.Db.Last(&record)
+	tx := m.Db.Model(&model.LeoPriceRecord{}).Last(&record)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return 0, nil
@@ -276,7 +276,7 @@ func (m *MyDb) GetLatestPrice() (float64, error) {
 
 func (m *MyDb) GetLatestRateOfWeek() ([]model.LeoRateRecord, error) {
 	var record []model.LeoRateRecord
-	tx := m.Db.Order("id DESC").Limit(4).Find(&record)
+	tx := m.Db.Model(&model.LeoRateRecord{}).Order("id DESC").Limit(4).Find(&record)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return record, nil
@@ -288,7 +288,7 @@ func (m *MyDb) GetLatestRateOfWeek() ([]model.LeoRateRecord, error) {
 
 func (m *MyDb) GetBanners() ([]model.ImageAssets, error) {
 	var assets []model.ImageAssets
-	tx := m.Db.Find(&assets)
+	tx := m.Db.Model(&model.ImageAssets{}).Find(&assets)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return assets, nil
@@ -335,7 +335,7 @@ func (m *MyDb) SelectLoanById(loanId uint) (*model.Loan, error) {
 	var loan model.Loan
 	var selector = &model.Loan{}
 	selector.ID = loanId
-	tx := m.Db.Where(selector).First(&loan)
+	tx := m.Db.Model(&model.Loan{}).Where(selector).First(&loan)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
 			return nil, nil

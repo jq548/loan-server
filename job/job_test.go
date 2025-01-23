@@ -20,5 +20,5 @@ var bscService, _ = service.NewBscChainService(&config.Bsc{
 var job = NewJob(nil, bscService, database, "0x4332B66D46761476B0A50A2F12EE6a17DaCe7247")
 
 func TestJob_StartCalculateRate(t *testing.T) {
-	job.StartFetchAleoPrice()
+	job.StartCalculateRate()
 }
