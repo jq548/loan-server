@@ -229,8 +229,8 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				}
 				err = s.Db.IncreaseProviderAmount(
 					decimal.NewFromBigInt(params.Amount, 1),
-					int(params.Duration.Int64()),
 					int(params.Start.Int64()),
+					int(params.Duration.Int64()),
 					params.Provider.Hex(),
 					log.TxHash.Hex(),
 					timestamp,
