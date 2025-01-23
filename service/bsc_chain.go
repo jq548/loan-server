@@ -67,8 +67,8 @@ func (s *BscChainService) StartFetchEvent() {
 		}
 		if s.lastCheckBlockNumber > height+5 {
 			blocks := s.lastCheckBlockNumber - height - 5
-			if blocks > 100 {
-				blocks = 100
+			if blocks > 20 {
+				blocks = 20
 			}
 			err := s.FilterLogs(height, blocks+height-1)
 			if err != nil {
