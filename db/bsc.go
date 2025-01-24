@@ -490,12 +490,13 @@ func (m *MyDb) SelectExchangeRecordByAddress(address string) ([]model.ExchangeRe
 
 func (m *MyDb) SelectProvideIncome(address string) ([]model.RewardRecordWithProvideInfo, error) {
 	var record []model.RewardRecordWithProvideInfo
-	sqls := fmt.Sprintf("SELECT provide_reward_record.*,provide_liquid.amount AS income_amount,provide_liquid.duration,provide_liquid.start,provide_liquid.status,provide_liquid.create_at,provide_liquid.create_hash,provide_liquid.retrieve_at,provide_liquid.retrieve_hash FROM provide_reward_record LEFT JOIN provide_liquid ON provide_reward_record.record_id=provide_liquid.record_id WHERE provide_reward_record.provider=\"%s\" AND provide_reward_record.type=0;", address)
+	sqls := fmt.Sprintf("SELECT provide_reward_record.*, provide_liquid.amount AS income_amount, provide_liquid.duration, provide_liquid.START, provide_liquid.STATUS, provide_liquid.create_at, provide_liquid.create_hash, provide_liquid.retrieve_at, provide_liquid.retrieve_hash  FROM provide_liquid LEFT JOIN provide_reward_record ON provide_reward_record.record_id = provide_liquid.record_id  WHERE provide_liquid.record_id IN (SELECT record_id FROM provide_reward_record WHERE provider = \"%s\" AND type = 0)  OR provide_liquid.record_id NOT IN (SELECT record_id FROM provide_reward_record WHERE provider = \"%s\");", address, address)
 	tx := m.Db.Raw(sqls).Scan(&record)
 	if tx.Error != nil {
 		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			return nil, gorm.ErrRecordNotFound
+			return nil, nil
 		}
+		return nil, tx.Error
 	}
 	return record, nil
 }
