@@ -159,8 +159,8 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.Duration.Int64()),
 					int(params.Start.Int64()),
 					timestamp,
-					decimal.NewFromBigInt(params.ReleaseAmount, 1),
-					decimal.NewFromBigInt(params.InterestAmount, 1))
+					decimal.NewFromBigInt(params.ReleaseAmount, 0),
+					decimal.NewFromBigInt(params.InterestAmount, 0))
 				if err != nil {
 					return err
 				}
@@ -174,7 +174,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.LoanId.Int64()),
 					log.TxHash.Hex(),
 					timestamp,
-					decimal.NewFromBigInt(params.Amount, 1))
+					decimal.NewFromBigInt(params.Amount, 0))
 				if err != nil {
 					return err
 				}
@@ -188,7 +188,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.LoanId.Int64()),
 					log.TxHash.Hex(),
 					timestamp,
-					decimal.NewFromBigInt(params.Amount, 1))
+					decimal.NewFromBigInt(params.Amount, 0))
 				if err != nil {
 					return err
 				}
@@ -199,7 +199,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				}
 				for i, id := range params.Ids {
 					err = s.Db.IncreaseProviderRewardAmount(
-						decimal.NewFromBigInt(params.Amounts[i], 1),
+						decimal.NewFromBigInt(params.Amounts[i], 0),
 						params.Providers[i].Hex(),
 						log.TxHash.Hex(),
 						timestamp,
@@ -214,11 +214,11 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					return err
 				}
 				err = s.Db.ReleaseProviderReward(
-					decimal.NewFromBigInt(params.Amount, 1),
+					decimal.NewFromBigInt(params.Amount, 0),
 					params.Provider.Hex(),
 					log.TxHash.Hex(),
 					timestamp,
-					decimal.NewFromBigInt(params.Fee, 1))
+					decimal.NewFromBigInt(params.Fee, 0))
 				if err != nil {
 					return err
 				}
@@ -228,7 +228,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					return err
 				}
 				err = s.Db.IncreaseProviderAmount(
-					decimal.NewFromBigInt(params.Amount, 1),
+					decimal.NewFromBigInt(params.Amount, 0),
 					int(params.Start.Int64()),
 					int(params.Duration.Int64()),
 					params.Provider.Hex(),
@@ -247,7 +247,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.Id.Int64()),
 					log.TxHash.Hex(),
 					timestamp,
-					decimal.NewFromBigInt(params.Fee, 1))
+					decimal.NewFromBigInt(params.Fee, 0))
 				if err != nil {
 					return err
 				}
@@ -258,7 +258,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				}
 				err = s.Db.SaveExchangeLpToUsdtRecord(
 					params.Forward,
-					decimal.NewFromBigInt(params.Amount, 1),
+					decimal.NewFromBigInt(params.Amount, 0),
 					params.Caller.Hex(),
 					log.TxHash.Hex(),
 					timestamp)
