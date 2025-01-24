@@ -158,9 +158,9 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 			}
 		}
 		BscProvideInfo := model.BscProvideInfo{
-			TotalProvide:    totalProvide.String(),
-			Income30:        income30.String(),
-			IncomeYesterday: incomeYesterday.String(),
+			TotalProvide:    totalProvide.Div(decimal.NewFromInt(consts.Wei)).String(),
+			Income30:        income30.Div(decimal.NewFromInt(consts.Wei)).String(),
+			IncomeYesterday: incomeYesterday.Div(decimal.NewFromInt(consts.Wei)).String(),
 			ProvideRecord:   records,
 		}
 		success := res.Success(BscProvideInfo)

@@ -11,7 +11,7 @@ type BscExchangeRecord struct {
 }
 
 type BscProvideInfo struct {
-	TotalProvide    string             `json:"total_provider"`
+	TotalProvide    string             `json:"total_provide"`
 	Income30        string             `json:"income_30"`
 	IncomeYesterday string             `json:"income_yesterday"`
 	ProvideRecord   []BscProvideRecord `json:"provide_record"`
