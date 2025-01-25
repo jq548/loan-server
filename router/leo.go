@@ -330,11 +330,11 @@ func overview(myRouter *Router) gin.HandlerFunc {
 		rate = rate.Div(decimal.NewFromFloat(365))
 		estimateRate := rate.Mul(decimal.NewFromFloat(1.6)).RoundDown(6)
 		overviewData := model.LeoOverView{
-			TotalProvideLiquid:      totalLiquid.String(),
-			TotalLoaned:             totalLoaned.String(),
-			LiquidUsedRate:          useRate.String(),
+			TotalProvideLiquid:      totalLiquid.Div(decimal.NewFromInt(consts.Wei)).String(),
+			TotalLoaned:             totalLoaned.Div(decimal.NewFromInt(consts.Wei)).String(),
+			LiquidUsedRate:          useRate.RoundDown(4).String(),
 			ProvideLiquidRewardRate: estimateRate.String(),
-			TotalDepositAleo:        totalDeposits.String(),
+			TotalDepositAleo:        totalDeposits.Div(decimal.NewFromInt(1000000)).String(),
 			HistoryRate:             historyRate,
 			Banners:                 bannerList,
 		}
