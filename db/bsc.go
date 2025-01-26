@@ -3,11 +3,13 @@ package db
 import (
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/shopspring/decimal"
 	"gorm.io/gorm"
 	"loan-server/common/consts"
 	errors2 "loan-server/common/errors"
 	"loan-server/model"
+	"math/big"
 	"strconv"
 	"time"
 )
@@ -161,11 +163,11 @@ func (m *MyDb) Clear(
 }
 
 func (m *MyDb) IncreaseProviderRewardAmount(
-	amount decimal.Decimal,
-	address string,
+	amounts []*big.Int,
+	addresses []common.Address,
 	hash string,
-	at,
-	recordId int) error {
+	at int,
+	recordIds []*big.Int) error {
 
 	var rec []model.ProvideRewardRecord
 	sqls := fmt.Sprintf("SELECT * from provide_reward_record WHERE hash=\"%s\" AND type=0;", hash)
@@ -174,15 +176,18 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 		return tx.Error
 	}
 	if len(rec) == 0 {
-		record := model.ProvideRewardRecord{
-			Type:     0,
-			Provider: address,
-			Amount:   amount,
-			At:       at,
-			Hash:     hash,
-			RecordId: recordId,
+		tx := m.Db.Begin()
+		for i, id := range recordIds {
+			record := model.ProvideRewardRecord{
+				Type:     0,
+				Provider: addresses[i].Hex(),
+				Amount:   decimal.NewFromBigInt(amounts[i], 0),
+				At:       at,
+				Hash:     hash,
+				RecordId: int(id.Int64()),
+			}
+			tx = m.Db.Create(&record)
 		}
-		tx := m.Db.Create(&record)
 		if tx.Error != nil {
 			return tx.Error
 		}

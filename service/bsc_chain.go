@@ -197,16 +197,14 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-				for i, id := range params.Ids {
-					err = s.Db.IncreaseProviderRewardAmount(
-						decimal.NewFromBigInt(params.Amounts[i], 0),
-						params.Providers[i].Hex(),
-						log.TxHash.Hex(),
-						timestamp,
-						int(id.Int64()))
-					if err != nil {
-						return err
-					}
+				err = s.Db.IncreaseProviderRewardAmount(
+					params.Amounts,
+					params.Providers,
+					log.TxHash.Hex(),
+					timestamp,
+					params.Ids)
+				if err != nil {
+					return err
 				}
 			case "0x9d55a88ba6edf4a14f0ad37d9f0833bb65734beea749cfeff8d52825ffd58ef9":
 				params, err := filterer.ParseEventReleaseLiquidReward(log)
