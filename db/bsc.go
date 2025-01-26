@@ -171,22 +171,22 @@ func (m *MyDb) IncreaseProviderRewardAmount(
 	sqls := fmt.Sprintf("SELECT * from provide_reward_record WHERE hash=\"%s\" AND type=0;", hash)
 	tx := m.Db.Raw(sqls).Scan(&rec)
 	if tx.Error != nil {
-		if errors.Is(tx.Error, gorm.ErrRecordNotFound) {
-			record := model.ProvideRewardRecord{
-				Type:     0,
-				Provider: address,
-				Amount:   amount,
-				At:       at,
-				Hash:     hash,
-				RecordId: recordId,
-			}
-			tx := m.Db.Create(&record)
-			if tx.Error != nil {
-				return tx.Error
-			}
-			return nil
-		}
 		return tx.Error
+	}
+	if len(rec) == 0 {
+		record := model.ProvideRewardRecord{
+			Type:     0,
+			Provider: address,
+			Amount:   amount,
+			At:       at,
+			Hash:     hash,
+			RecordId: recordId,
+		}
+		tx := m.Db.Create(&record)
+		if tx.Error != nil {
+			return tx.Error
+		}
+		return nil
 	}
 	return nil
 }
