@@ -64,7 +64,7 @@ func (s *LeoChainService) Start() {
 		}
 		if s.lastCheckBlockNumber > height+5 {
 			blocks := s.lastCheckBlockNumber - height - 5
-			if blocks < 3 {
+			if blocks < 5 {
 				time.Sleep(1 * time.Second)
 				continue
 			}
