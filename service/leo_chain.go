@@ -64,6 +64,9 @@ func (s *LeoChainService) Start() {
 		}
 		if s.lastCheckBlockNumber > height+5 {
 			blocks := s.lastCheckBlockNumber - height - 5
+			if blocks < 3 {
+				continue
+			}
 			if blocks > 50 {
 				blocks = 50
 			}
