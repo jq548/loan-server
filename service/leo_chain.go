@@ -130,6 +130,7 @@ func (s *LeoChainService) getRequest(url string) (string, error) {
 	client := &http.Client{
 		Timeout: 10 * time.Second,
 	}
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		return "", err

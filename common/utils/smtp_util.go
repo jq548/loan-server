@@ -15,7 +15,7 @@ func SendEmail(isHtml bool, fromEmail string, fromAccount string, fromEmailPassw
 	m := gomail.NewMessage()
 	m.SetHeader("From", fromEmail)
 	m.SetHeader("To", receiveEmail)
-	m.SetHeader("Subject", "Sinso")
+	m.SetHeader("Subject", "No replay")
 	if isHtml {
 		m.SetBody("text/html", message)
 	} else {
