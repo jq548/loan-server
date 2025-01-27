@@ -65,10 +65,11 @@ func (s *LeoChainService) Start() {
 		if s.lastCheckBlockNumber > height+5 {
 			blocks := s.lastCheckBlockNumber - height - 5
 			if blocks < 3 {
+				time.Sleep(1 * time.Second)
 				continue
 			}
-			if blocks > 50 {
-				blocks = 50
+			if blocks > 30 {
+				blocks = 30
 			}
 
 			blockData, err := s.GetBlocks(height, blocks+height-1)
