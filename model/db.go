@@ -16,7 +16,7 @@ type Loan struct {
 	gorm.Model
 	AleoAddress       string          //
 	BscAddress        string          //
-	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared, 6 release failed, 7 clear change state failed(contract), 8 clear sold failed, 9 clear calculate failed(income)
+	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared, 6 release failed, 7 clear change state failed(contract), 8 clear sold failed, 9 clear calculate failed(income), 10 redeemed failed(transfer back)
 	Stages            int             //
 	PayStages         int             //
 	DayPerStage       int             //
@@ -39,6 +39,11 @@ type Loan struct {
 	ReleaseAleoHash   string          // pay back release aleo hash
 	ReleaseAleoAt     int             // pay back release aleo time
 	ReleaseAleoAmount decimal.Decimal // pay back release aleo amount
+	ClearSoldUsdt     decimal.Decimal // from exchanges
+	ClearSoldAt       int             // from exchanges
+	ClearRetrieveUsdt decimal.Decimal // from exchanges
+	ClearRetrieveAt   int             // from exchanges
+	ClearRetrieveHash string          // from exchanges
 }
 
 // deposit data of loan, include first and recharge
@@ -182,4 +187,11 @@ type IncomeGenerateRecord struct {
 	At        int
 	Hash      string
 	Status    int // 0 created, 1 transact success, 2 transact failed
+}
+
+type SendEmailRecord struct {
+	gorm.Model
+	LoanId uint
+	Email  string
+	Status int // 0 success, 1 failed
 }

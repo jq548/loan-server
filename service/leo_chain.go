@@ -95,7 +95,7 @@ func (s *LeoChainService) Start() {
 											sub1 := strings.ReplaceAll(sub[1], "]}", "")
 											values := strings.Split(sub1, ",")
 											if len(values) == 3 {
-												if values[1] == s.holder {
+												if values[1] == s.holder || values[0] == s.holder {
 													err = s.SaveBlockTransaction(transition.ID, values[0], values[1], values[2], block.Header.Metadata.Timestamp)
 													if err != nil {
 														zap.S().Error(err)
@@ -246,7 +246,6 @@ func (s *LeoChainService) PayBackLoan(to, amount string) error {
 		amount,
 	)
 
-	// 获取命令的输出
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error:", err)

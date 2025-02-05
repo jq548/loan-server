@@ -6,6 +6,7 @@ import (
 	"github.com/shopspring/decimal"
 	"go.uber.org/zap"
 	"loan-server/common/consts"
+	"loan-server/common/utils"
 	"loan-server/db"
 	"loan-server/model"
 	"loan-server/service"
@@ -208,6 +209,31 @@ func (job *Job) StartCalculateIncomeRate() {
 	}
 }
 
+func (job *Job) StartCheckExpiredLoans() {
+	zap.S().Info("StartCheckExpiredLoans...")
+	loans, err := job.Db.FindLoanByStatus(2)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	for _, loan := range loans {
+		if int64(loan.StartAt+loan.Stages*loan.DayPerStage)+24*3600 < time.Now().Unix() {
+			status := loan.Status
+			err := job.BscService.ClearLoanInContract(big.NewInt(int64(loan.ID)))
+			if err != nil {
+				zap.S().Error(err)
+				status = 7
+			} else {
+				status = 5
+			}
+			err = job.Db.SaveStatusOfLoan(int(loan.ID), status)
+			if err != nil {
+				zap.S().Error(err)
+			}
+		}
+	}
+}
+
 func (job *Job) CheckFailedJobs() {
 	zap.S().Info("CheckFailedJobs...")
 	// income
@@ -248,12 +274,15 @@ func (job *Job) updateLoanHealth() error {
 		if err != nil {
 			return err
 		}
+		if loan.Health.LessThan(decimal.NewFromFloat(0.8)) && loan.Health.GreaterThan(decimal.NewFromFloat(0.7)) {
+			job.sendWarningEmail(loan)
+		}
 		if loan.Health.LessThan(decimal.NewFromFloat(0.7)) {
 			status := 5
 			err := job.BscService.ClearLoanInContract(big.NewInt(int64(loan.ID)))
 			if err != nil {
 				zap.S().Error(err)
-				status = 6
+				status = 7
 			}
 			err = job.Db.SaveStatusOfLoan(int(loan.ID), status)
 			if err != nil {
@@ -317,17 +346,87 @@ func (job *Job) checkIncreaseIncome() {
 }
 
 func (job *Job) checkCreateLoan() {
-
+	loans, err := job.Db.FindLoanByStatus(6)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	for _, loan := range loans {
+		err := job.BscService.CreateLoanInContract(
+			big.NewInt(int64(loan.ID)),
+			loan.LoanAmount.BigInt(),
+			big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
+			loan.InterestAmount.BigInt(),
+			loan.BscAddress)
+		if err != nil {
+			zap.S().Error(err)
+			err = job.Db.SaveCreateFailed(int(loan.ID), 6)
+			if err != nil {
+				zap.S().Error(err)
+			}
+		}
+	}
 }
 
 func (job *Job) checkClearLoanOnContract() {
-
+	loans, err := job.Db.FindLoanByStatus(7)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	for _, loan := range loans {
+		status := loan.Status
+		err := job.BscService.ClearLoanInContract(big.NewInt(int64(loan.ID)))
+		if err != nil {
+			zap.S().Error(err)
+			status = 7
+		} else {
+			status = 5
+		}
+		err = job.Db.SaveStatusOfLoan(int(loan.ID), status)
+		if err != nil {
+			zap.S().Error(err)
+		}
+	}
 }
 
 func (job *Job) checkClearLoanSold() {
-
+	loans, err := job.Db.FindLoanByStatus(8)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	for _, loan := range loans {
+		job.BscService.ExecClearSold(loan.ID)
+	}
 }
 
 func (job *Job) checkClearLoanFinish() {
+	loans, err := job.Db.FindLoanByStatus(9)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	for _, loan := range loans {
+		job.BscService.ExecClearCalculateIncome(loan.ID)
+	}
+}
 
+func (job *Job) sendWarningEmail(loan model.Loan) {
+	record, err := job.Db.FindSendEmailRecord(loan.ID)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	if len(record) == 0 {
+		success, err := utils.SendEmail(false, "", "", "", "", 443, loan.Email, "Your loan health is lower than 80%")
+		if err != nil {
+			success = false
+		}
+		err = job.Db.SaveSendEmailRecord(loan.ID, success, loan.Email)
+		if err != nil {
+			zap.S().Error(err)
+			return
+		}
+	}
 }

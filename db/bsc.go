@@ -317,6 +317,43 @@ func (m *MyDb) RetrieveProviderAmount(
 	return nil
 }
 
+func (m *MyDb) SaveClearRewardIncome(
+	hash string,
+	at int,
+	isNegative bool,
+	fee decimal.Decimal) error {
+	var count int64
+	tx := m.Db.Model(&model.IncomeRecord{}).Where(&model.IncomeRecord{
+		Hash: hash,
+	}).Count(&count)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	if count > 0 {
+		return nil
+	}
+
+	in := 1
+	if isNegative {
+		in = 0
+	}
+
+	tx = m.Db.Create(&model.IncomeRecord{
+		Type:       4,
+		Amount:     fee,
+		At:         at,
+		IsNegative: in,
+		SplitDays:  0,
+		EndAt:      at,
+		Hash:       hash,
+	})
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	return nil
+}
+
 func (m *MyDb) TotalIncomeLastDay(isPlatform bool) (decimal.Decimal, error) {
 	var result decimal.Decimal
 	config, err := m.GetConfig()

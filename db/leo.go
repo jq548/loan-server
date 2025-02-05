@@ -83,6 +83,23 @@ func (m *MyDb) NewDeposit(
 	return nil
 }
 
+func (m *MyDb) NewDepositOfLoan(
+	loanId int,
+	aleoAddress string,
+	aleoAmount int64) error {
+	deposit := &model.Deposit{
+		LoanId:      uint(loanId),
+		AleoAddress: aleoAddress,
+		AleoAmount:  decimal.NewFromInt(aleoAmount),
+		Status:      0,
+	}
+	tx := m.Db.Create(&deposit)
+	if tx.Error != nil {
+		return tx.Error
+	}
+	return nil
+}
+
 func (m *MyDb) SaveCreateFailed(id, status int) error {
 	var loan model.Loan
 	tx := m.Db.First(&loan, id)

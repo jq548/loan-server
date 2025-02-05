@@ -47,6 +47,7 @@ func main() {
 	myJob.StartJob(cfg.Job.CalculateIncome, myJob.StartCalculateIncome)
 	myJob.StartJob(cfg.Job.CalculateIncomeYearRate, myJob.StartCalculateIncomeRate)
 	myJob.StartJob(cfg.Job.CheckFailedJobs, myJob.CheckFailedJobs)
+	myJob.StartJob(cfg.Job.CheckExpiredLoans, myJob.StartCheckExpiredLoans)
 
 	ginEngine := gin.Default()
 	gin.SetMode(gin.DebugMode)

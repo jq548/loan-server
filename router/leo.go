@@ -137,17 +137,15 @@ curl -X POST \
 // saveDeposit
 func saveDeposit(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
+		config, err := myRouter.mydb.GetConfig()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
 		var params model.ReqSaveDeposit
 		if err := context.ShouldBindJSON(&params); err != nil {
 			panic(errors.New(errors.ParameterError))
 		}
 		if !utils.IsValidLeoAddress(params.AleoAddress) {
-			panic(errors.New(errors.ParameterError))
-		}
-		if !utils.IsValidAddress(params.BscAddress) {
-			panic(errors.New(errors.ParameterError))
-		}
-		if !utils.VerifyEmailFormat(params.Email) {
 			panic(errors.New(errors.ParameterError))
 		}
 		if params.LoanType != 1 {
@@ -156,30 +154,39 @@ func saveDeposit(myRouter *Router) gin.HandlerFunc {
 		if params.Type < 0 || params.Type > 2 {
 			panic(errors.New(errors.ParameterError))
 		}
-		config, err := myRouter.mydb.GetConfig()
-		if err != nil {
-			panic(errors.New(errors.SystemError))
-		}
-		if config.DayPerStage != params.DayPerStage {
-			panic(errors.New(errors.ParameterError))
-		}
-		if config.AvailableStages < params.Stages || params.Stages < 0 {
-			panic(errors.New(errors.ParameterError))
-		}
 		intAmount := int64(params.AleoAmount * 1000000)
 		if config.MinLoanAmount > intAmount || config.MaxLoanAmount < intAmount {
 			panic(errors.New(errors.ParameterError))
 		}
-		err = myRouter.mydb.NewDeposit(
-			params.AleoAddress,
-			params.BscAddress,
-			params.Email,
-			intAmount,
-			params.Stages,
-			params.DayPerStage,
-			config.ReleaseRate)
-		if err != nil {
-			panic(errors.New(errors.SystemError))
+		if params.Type == 0 {
+			if !utils.IsValidAddress(params.BscAddress) {
+				panic(errors.New(errors.ParameterError))
+			}
+			if !utils.VerifyEmailFormat(params.Email) {
+				panic(errors.New(errors.ParameterError))
+			}
+			if config.DayPerStage != params.DayPerStage {
+				panic(errors.New(errors.ParameterError))
+			}
+			if config.AvailableStages < params.Stages || params.Stages < 0 {
+				panic(errors.New(errors.ParameterError))
+			}
+			err = myRouter.mydb.NewDeposit(
+				params.AleoAddress,
+				params.BscAddress,
+				params.Email,
+				intAmount,
+				params.Stages,
+				params.DayPerStage,
+				config.ReleaseRate)
+			if err != nil {
+				panic(errors.New(errors.SystemError))
+			}
+		} else {
+			err = myRouter.mydb.NewDepositOfLoan(params.LoanId, params.AleoAddress, intAmount)
+			if err != nil {
+				panic(errors.New(errors.SystemError))
+			}
 		}
 		success := res.Success(map[string]bool{
 			"success": true,

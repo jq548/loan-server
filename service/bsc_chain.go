@@ -182,7 +182,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-				//TODO transfer aleo back
+				s.ExecPayBack(uint(params.LoanId.Int64()))
 			case "0x5a322d6a1b1ff3f692c4c5995ba8133271b684bd011bc8e2f711d50db23bfe03":
 				params, err := filterer.ParseEventClear(log)
 				if err != nil {
@@ -196,6 +196,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
+				//TODO sold aleo
 			case "0xa16a887e0d16d473c5a8459cbf20c45ef7f0a282e60e60adcacb455ae31ebb62":
 				params, err := filterer.ParseEventIncreaseLiquidRewardBath(log)
 				if err != nil {
@@ -390,4 +391,71 @@ func (s *BscChainService) IncreaseIncome(ids []*big.Int, addresses []string, amo
 		return "", err
 	}
 	return tx.Hash().Hex(), nil
+}
+
+func (s *BscChainService) ExecPayBack(loanId uint) {
+	loan, err := s.Db.SelectLoanById(loanId)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	deposits, err := s.Db.SelectDepositByLoanId(int(loanId))
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	totalAmount := decimal.NewFromInt(0)
+	for _, deposit := range deposits {
+		totalAmount = totalAmount.Add(deposit.AleoAmount)
+	}
+	status := 4
+	err = s.LeoService.PayBackLoan(loan.AleoAddress, totalAmount.String())
+	if err != nil {
+		zap.S().Error(err)
+		status = 10
+	}
+	err = s.Db.SaveStatusOfLoan(int(loanId), status)
+	if err != nil {
+		zap.S().Error(err)
+	}
+}
+
+func (s *BscChainService) ExecClearSold(loanId uint) {
+	loan, err := s.Db.SelectLoanById(loanId)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+
+	// TODO exec sold, save sold usdt, retrieve usdt
+	print(loan)
+
+	success := false
+	if success {
+		s.ExecClearCalculateIncome(loanId)
+	} else {
+		err := s.Db.SaveStatusOfLoan(int(loanId), 8)
+		if err != nil {
+			zap.S().Error(err)
+			return
+		}
+	}
+}
+
+func (s *BscChainService) ExecClearCalculateIncome(loanId uint) {
+	loan, err := s.Db.SelectLoanById(loanId)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	negative := false
+	if loan.LoanAmount.GreaterThan(loan.ClearRetrieveUsdt) {
+		negative = true
+	}
+	amount := loan.LoanAmount.Sub(loan.ClearRetrieveUsdt).Abs()
+	err = s.Db.SaveClearRewardIncome(loan.ClearRetrieveHash, loan.ClearRetrieveAt, negative, amount)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
 }
