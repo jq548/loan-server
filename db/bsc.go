@@ -532,7 +532,7 @@ func (m *MyDb) SelectExchangeRecordByAddress(address string) ([]model.ExchangeRe
 
 func (m *MyDb) SelectProvideIncome(address string) ([]model.RewardRecordWithProvideInfo, error) {
 	var noIncomes []model.RewardRecordWithProvideInfo
-	sqls := fmt.Sprintf("SELECT * FROM provide_liquid WHERE provider=\"%s\" AND id NOT IN (SELECT record_id FROM provide_reward_record WHERE provider=\"%s\");", address, address)
+	sqls := fmt.Sprintf("SELECT * FROM provide_liquid WHERE provider=\"%s\" AND record_id NOT IN (SELECT record_id FROM provide_reward_record WHERE provider=\"%s\");", address, address)
 	tx := m.Db.Raw(sqls).Scan(&noIncomes)
 	if tx.Error != nil {
 		return nil, tx.Error
