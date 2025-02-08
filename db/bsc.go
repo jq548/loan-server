@@ -295,6 +295,7 @@ func (m *MyDb) RetrieveProviderAmount(
 	}
 	pl.Status = 1
 	pl.RetrieveAt = at
+	pl.RetrieveFee = fee
 	pl.RetrieveHash = hash
 	tx = m.Db.Save(&pl)
 	if tx.Error != nil {

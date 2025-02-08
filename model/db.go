@@ -14,6 +14,7 @@ type Cache struct {
 // loan data
 type Loan struct {
 	gorm.Model
+	Contract          string
 	AleoAddress       string          //
 	BscAddress        string          //
 	Status            int             // 0 save, 1 confirmed(receive deposit), 2 released usdt, 3 staging, 4 redeemed, 5 cleared, 6 release failed, 7 clear change state failed(contract), 8 clear sold failed, 9 clear calculate failed(income), 10 redeemed failed(transfer back)
@@ -39,6 +40,7 @@ type Loan struct {
 	ReleaseAleoHash   string          // pay back release aleo hash
 	ReleaseAleoAt     int             // pay back release aleo time
 	ReleaseAleoAmount decimal.Decimal // pay back release aleo amount
+	ClearSoldAleo     decimal.Decimal //
 	ClearSoldUsdt     decimal.Decimal // from exchanges
 	ClearSoldAt       int             // from exchanges
 	ClearRetrieveUsdt decimal.Decimal // from exchanges
@@ -83,6 +85,7 @@ type ImageAssets struct {
 // provide liquid data
 type ProvideLiquid struct {
 	gorm.Model
+	Contract     string
 	Amount       decimal.Decimal
 	Duration     int
 	Start        int
@@ -90,6 +93,7 @@ type ProvideLiquid struct {
 	Provider     string
 	CreateAt     int
 	CreateHash   string
+	RetrieveFee  decimal.Decimal
 	RetrieveAt   int
 	RetrieveHash string
 	RecordId     int
