@@ -78,13 +78,15 @@ func (m *MyDb) SaveDepositOnBscHash(
 		return tx.Error
 	}
 	tx = m.Db.Create(&model.IncomeRecord{
-		Type:       1,
-		Amount:     interestAmount,
-		At:         start,
-		IsNegative: 0,
-		SplitDays:  duration / 24 / 3600,
-		EndAt:      start + duration,
-		Hash:       hash,
+		Contract:     loan.Contract,
+		ContractType: 1,
+		Type:         1,
+		Amount:       interestAmount,
+		At:           start,
+		IsNegative:   0,
+		SplitDays:    duration / 24 / 3600,
+		EndAt:        start + duration,
+		Hash:         hash,
 	})
 	if tx.Error != nil {
 		return tx.Error
@@ -212,6 +214,7 @@ func (m *MyDb) ReleaseProviderReward(
 				Amount:   amount,
 				At:       at,
 				Hash:     hash,
+				Fee:      fee,
 			}
 			tx := m.Db.Create(&record)
 			if tx.Error != nil {
@@ -303,13 +306,15 @@ func (m *MyDb) RetrieveProviderAmount(
 	}
 	if fee.GreaterThan(decimal.Zero) {
 		tx := m.Db.Create(&model.IncomeRecord{
-			Type:       3,
-			Amount:     fee,
-			At:         at,
-			IsNegative: 0,
-			SplitDays:  0,
-			EndAt:      at,
-			Hash:       hash,
+			Contract:     pl.Contract,
+			ContractType: 2,
+			Type:         3,
+			Amount:       fee,
+			At:           at,
+			IsNegative:   0,
+			SplitDays:    0,
+			EndAt:        at,
+			Hash:         hash,
 		})
 		if tx.Error != nil {
 			return tx.Error
@@ -319,7 +324,7 @@ func (m *MyDb) RetrieveProviderAmount(
 }
 
 func (m *MyDb) SaveClearRewardIncome(
-	hash string,
+	hash, contract string,
 	at int,
 	isNegative bool,
 	fee decimal.Decimal) error {
@@ -340,13 +345,15 @@ func (m *MyDb) SaveClearRewardIncome(
 	}
 
 	tx = m.Db.Create(&model.IncomeRecord{
-		Type:       4,
-		Amount:     fee,
-		At:         at,
-		IsNegative: in,
-		SplitDays:  0,
-		EndAt:      at,
-		Hash:       hash,
+		Contract:     contract,
+		ContractType: 1,
+		Type:         4,
+		Amount:       fee,
+		At:           at,
+		IsNegative:   in,
+		SplitDays:    0,
+		EndAt:        at,
+		Hash:         hash,
 	})
 	if tx.Error != nil {
 		return tx.Error

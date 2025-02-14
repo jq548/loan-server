@@ -29,6 +29,7 @@ type Loan struct {
 	Type              int             // 1
 	Email             string          //
 	BscLoanId         int             // loan id of contract
+	DepositAmount     decimal.Decimal //
 	LoanAmount        decimal.Decimal // amount of loan
 	ReleaseAt         int             // loan create(release usdt) time
 	ReleaseHash       string          // loan create(release usdt) hash
@@ -107,8 +108,9 @@ type ProvideRewardRecord struct {
 	Amount     decimal.Decimal
 	Hash       string
 	At         int
+	Fee        decimal.Decimal
 	SourceType int // 0 provide(provider), 1 loan(platform), 2 provider withdraw reward fee(platform), 3 provider release fee(platform)
-	RecordId   int
+	RecordId   int // type = 0 (0 (platform), 1 (provider))
 }
 
 // for select
@@ -157,13 +159,15 @@ type LeoRateRecord struct {
 // income create record, before split on morning
 type IncomeRecord struct {
 	gorm.Model
-	Amount     decimal.Decimal
-	At         int
-	IsNegative int    // 0 no, 1 yes
-	Type       int    // 1 interest(3:7), 2 provider withdraw reward fee(1:0), 3 provider release fee(1:0), 4 clear(3:7)
-	SplitDays  int    //
-	EndAt      int    //
-	Hash       string // hash of create action
+	Amount       decimal.Decimal
+	At           int
+	Contract     string
+	ContractType int    // 1 loan, 2 provide
+	IsNegative   int    // 0 no, 1 yes
+	Type         int    // 1 interest(3:7), 2 provider withdraw reward fee(1:0), 3 provider release fee(1:0), 4 clear(3:7)
+	SplitDays    int    //
+	EndAt        int    //
+	Hash         string // hash of create action
 }
 
 // exchange lp to usdt record

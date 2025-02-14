@@ -64,6 +64,7 @@ func (m *MyDb) NewDeposit(
 		DayPerStage:    dayPerStage,
 		InterestAmount: decimal.NewFromInt(0),
 		ReleaseRate:    releaseRate,
+		DepositAmount:  decimal.NewFromInt(aleoAmount),
 	}
 	tx := m.Db.Create(&loan)
 	if tx.Error != nil {

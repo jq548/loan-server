@@ -453,7 +453,7 @@ func (s *BscChainService) ExecClearCalculateIncome(loanId uint) {
 		negative = true
 	}
 	amount := loan.LoanAmount.Sub(loan.ClearRetrieveUsdt).Abs()
-	err = s.Db.SaveClearRewardIncome(loan.ClearRetrieveHash, loan.ClearRetrieveAt, negative, amount)
+	err = s.Db.SaveClearRewardIncome(loan.ClearRetrieveHash, loan.Contract, loan.ClearRetrieveAt, negative, amount)
 	if err != nil {
 		zap.S().Error(err)
 		return
