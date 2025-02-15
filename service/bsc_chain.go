@@ -151,7 +151,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 		}
 		for _, topic := range log.Topics {
 			switch topic.Hex() {
-			case "0x8359c828396108eedea00704782ac2a600d822d6d56312c4e10f62408aedca5d":
+			case "0x03202e2601fe369e9c852282bb80c76f1a95c0e24d981af34025e873ecf2e265":
 				params, err := filterer.ParseEventNewLoan(log)
 				if err != nil {
 					return err
@@ -159,6 +159,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				err = s.Db.SaveDepositOnBscHash(
 					log.TxHash.Hex(),
 					params.Loaner.Hex(),
+					params.ContractNumber,
 					int(params.LoanId.Int64()),
 					int(params.Duration.Int64()),
 					int(params.Start.Int64()),
@@ -225,7 +226,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0x75780a70131ef5cf8aff25941e13a743681d34e1eb85abde44b32e09280e1fcc":
+			case "0xc4465189dc42b892fdb687a991d4bf318f4037ba3a9112c1529ea34428624ba9":
 				params, err := filterer.ParseEventProviderAdd(log)
 				if err != nil {
 					return err
@@ -235,6 +236,7 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 					int(params.Start.Int64()),
 					int(params.Duration.Int64()),
 					params.Provider.Hex(),
+					params.ContractNumber,
 					log.TxHash.Hex(),
 					timestamp,
 					int(params.Id.Int64()))
@@ -254,8 +256,8 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-			case "0x1a83ec821f4483d6557a8f7a974b0861f82494f76a8589611ab01a019489b491":
-				params, err := filterer.ParseEventExchangeLpToUsdt(log)
+			case "0x8f42679c55c4ab0d0d4ede888c38400d08bf7f003dfad1fb7a45c9757723cc01":
+				params, err := filterer.ParseEventExchangeDinarToUsdt(log)
 				if err != nil {
 					return err
 				}
@@ -303,7 +305,9 @@ func (s *BscChainService) CreateLoanInContract(
 	amount,
 	duration,
 	interestAmount *big.Int,
-	loaner string) error {
+	loaner string,
+	aleoAddress string,
+	aleoAmount, aleoPrice *big.Int) error {
 	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
 	if err != nil {
 		return err
@@ -317,7 +321,7 @@ func (s *BscChainService) CreateLoanInContract(
 		if err != nil {
 			return err
 		}
-		_, err = loanContract.AddNewLoan(opts, id, amount, duration, common.HexToAddress(loaner), interestAmount)
+		_, err = loanContract.AddNewLoan(opts, id, amount, duration, common.HexToAddress(loaner), interestAmount, aleoAddress, aleoAmount, aleoPrice)
 		if err != nil {
 			return err
 		}
@@ -335,6 +339,23 @@ func (s *BscChainService) ClearLoanInContract(loanId *big.Int) error {
 		return err
 	}
 	_, err = loanContract.Clear(opts, loanId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *BscChainService) FinishClearLoan(loanId *big.Int, clearAmount *big.Int) error {
+	loanContract, err := contract.NewLoan(common.HexToAddress(s.LoanContractAddress), s.EthClient)
+	if err != nil {
+		return err
+	}
+	opts, err := s.GetTransactOpts(s.CallerPk)
+	if err != nil {
+		return err
+	}
+	_, err = loanContract.FinishClear(opts, loanId, clearAmount)
 	if err != nil {
 		return err
 	}
@@ -444,6 +465,11 @@ func (s *BscChainService) ExecClearSold(loanId uint) {
 
 func (s *BscChainService) ExecClearCalculateIncome(loanId uint) {
 	loan, err := s.Db.SelectLoanById(loanId)
+	if err != nil {
+		zap.S().Error(err)
+		return
+	}
+	err = s.FinishClearLoan(big.NewInt(int64(loanId)), loan.ClearRetrieveUsdt.BigInt())
 	if err != nil {
 		zap.S().Error(err)
 		return

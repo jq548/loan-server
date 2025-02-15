@@ -154,6 +154,7 @@ func (m *MyDb) SaveDepositHash(
 		loan.ReleaseAt = 0
 		loan.ReleaseHash = ""
 		loan.InterestAmount = interestAmount
+		loan.DepositPrice = price
 		tx = m.Db.Save(&loan)
 		if tx.Error != nil {
 			return nil, tx.Error

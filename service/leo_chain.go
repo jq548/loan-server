@@ -220,7 +220,11 @@ func (s *LeoChainService) SaveBlockTransaction(
 					loanAmount.BigInt(),
 					big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
 					interestAmount.BigInt(),
-					loan.BscAddress)
+					loan.BscAddress,
+					loan.AleoAddress,
+					loan.DepositAmount.BigInt(),
+					price.BigInt(),
+				)
 				if err != nil {
 					zap.S().Error(err)
 					err = s.Db.SaveCreateFailed(int(loan.ID), 6)

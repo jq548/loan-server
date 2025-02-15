@@ -43,7 +43,7 @@ func (m *MyDb) SaveBscBlockHeight(height int) error {
 
 func (m *MyDb) SaveDepositOnBscHash(
 	hash,
-	loaner string,
+	loaner, contract string,
 	loanId,
 	duration,
 	start,
@@ -72,6 +72,7 @@ func (m *MyDb) SaveDepositOnBscHash(
 	loan.ReleaseHash = hash
 	loan.ReleaseAmount = releaseAmount
 	loan.Status = 2
+	loan.Contract = contract
 
 	tx = m.Db.Save(&loan)
 	if tx.Error != nil {
@@ -245,7 +246,7 @@ func (m *MyDb) ReleaseProviderReward(
 func (m *MyDb) IncreaseProviderAmount(
 	amount decimal.Decimal,
 	start, duration int,
-	address string,
+	address, contract string,
 	hash string,
 	at, recordId int) error {
 	var count int64
@@ -259,6 +260,7 @@ func (m *MyDb) IncreaseProviderAmount(
 		return nil
 	}
 	tx = m.Db.Create(&model.ProvideLiquid{
+		Contract:   contract,
 		Amount:     amount,
 		Duration:   duration,
 		Start:      start,

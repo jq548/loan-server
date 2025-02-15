@@ -357,7 +357,11 @@ func (job *Job) checkCreateLoan() {
 			loan.LoanAmount.BigInt(),
 			big.NewInt(int64(loan.Stages*loan.DayPerStage*24*3600)),
 			loan.InterestAmount.BigInt(),
-			loan.BscAddress)
+			loan.BscAddress,
+			loan.AleoAddress,
+			loan.DepositAmount.BigInt(),
+			loan.DepositPrice.BigInt(),
+		)
 		if err != nil {
 			zap.S().Error(err)
 			err = job.Db.SaveCreateFailed(int(loan.ID), 6)

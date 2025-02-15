@@ -30,6 +30,7 @@ type Loan struct {
 	Email             string          //
 	BscLoanId         int             // loan id of contract
 	DepositAmount     decimal.Decimal //
+	DepositPrice      decimal.Decimal //
 	LoanAmount        decimal.Decimal // amount of loan
 	ReleaseAt         int             // loan create(release usdt) time
 	ReleaseHash       string          // loan create(release usdt) hash

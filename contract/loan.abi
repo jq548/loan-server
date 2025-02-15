@@ -46,7 +46,32 @@
           "type": "address"
         }
       ],
-      "name": "eventExchangeLpToUsdt",
+      "name": "eventExchangeDinarToUsdt",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "loanAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "clearAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "eventFinishClear",
       "type": "event"
     },
     {
@@ -137,6 +162,30 @@
           "internalType": "uint256",
           "name": "interestAmount",
           "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "contractNumber",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "aleoAddress",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "aleoAmount",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "aleoPrice",
+          "type": "uint256"
         }
       ],
       "name": "eventNewLoan",
@@ -199,6 +248,12 @@
           "internalType": "address",
           "name": "provider",
           "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "contractNumber",
+          "type": "string"
         }
       ],
       "name": "eventProviderAdd",
@@ -286,6 +341,21 @@
           "internalType": "uint256",
           "name": "interestAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "aleoAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "aleoAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "aleoPrice",
+          "type": "uint256"
         }
       ],
       "name": "addNewLoan",
@@ -338,7 +408,7 @@
           "type": "uint256"
         }
       ],
-      "name": "exchangeLpUsdt",
+      "name": "exchangeDinarUsdt",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -352,6 +422,24 @@
         }
       ],
       "name": "extract",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "loanId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "clearAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "finishClear",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -416,7 +504,7 @@
         },
         {
           "internalType": "address",
-          "name": "lp",
+          "name": "dinar",
           "type": "address"
         }
       ],
@@ -459,6 +547,11 @@
           "internalType": "address",
           "name": "provider",
           "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "contractNumber",
+          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -527,6 +620,26 @@
           "internalType": "uint256",
           "name": "interestAmount",
           "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "contractNumber",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "aleoAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "aleoAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "aleoPrice",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -540,7 +653,7 @@
           "type": "bool"
         }
       ],
-      "name": "maxExchangeLpUsdt",
+      "name": "maxExchangeDinarUsdt",
       "outputs": [
         {
           "internalType": "uint256",
@@ -644,11 +757,11 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "lp",
+          "name": "dinar",
           "type": "address"
         }
       ],
-      "name": "setLpContract",
+      "name": "setDinarContract",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
