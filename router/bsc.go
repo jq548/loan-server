@@ -225,6 +225,10 @@ func exchangeRecord(myRouter *Router) gin.HandlerFunc {
 
 func bscLoanList(myRouter *Router) gin.HandlerFunc {
 	return func(context *gin.Context) {
+		price, err := myRouter.mydb.GetLatestPrice()
+		if err != nil {
+			panic(errors.New(errors.SystemError))
+		}
 		address := context.Query("address")
 		if address == "" {
 
@@ -244,6 +248,8 @@ func bscLoanList(myRouter *Router) gin.HandlerFunc {
 			if err != nil {
 				return
 			}
+			ValueWhenDeposit := decimal.Zero
+			ValueCurrent := decimal.Zero
 			for _, d := range ds {
 				deposits = append(deposits, model.LeoResDeposit{
 					ID:          int(d.ID),
@@ -256,6 +262,8 @@ func bscLoanList(myRouter *Router) gin.HandlerFunc {
 					At:          d.At,
 					Status:      d.Status,
 				})
+				ValueWhenDeposit = ValueWhenDeposit.Add(d.UsdtValue.Div(decimal.NewFromInt(consts.Wei)))
+				ValueCurrent = ValueWhenDeposit.Add(d.AleoAmount.Div(decimal.NewFromInt(1000000)).Mul(decimal.NewFromFloat(price)))
 			}
 			resLoans = append(resLoans, model.LeoResLoan{
 				ID:                int(loan.ID),
@@ -282,6 +290,11 @@ func bscLoanList(myRouter *Router) gin.HandlerFunc {
 				ReleaseAleoAt:     loan.ReleaseAleoAt,
 				ReleaseAleoAmount: loan.ReleaseAleoAmount.Div(decimal.NewFromInt(consts.Wei)).String(),
 				Deposits:          deposits,
+				DepositAmount:     loan.DepositAmount.Div(decimal.NewFromInt(consts.Wei)).String(),
+				DepositPrice:      loan.DepositPrice.String(),
+				Contract:          loan.Contract,
+				ValueCurrent:      ValueCurrent.String(),
+				ValueWhenDeposit:  ValueWhenDeposit.String(),
 			})
 		}
 		success := res.Success(resLoans)

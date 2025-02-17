@@ -171,10 +171,10 @@ type IncomeRecord struct {
 	Hash         string // hash of create action
 }
 
-// exchange lp to usdt record
+// exchange dinar to usdt record
 type ExchangeRecord struct {
 	gorm.Model
-	Type    int // 1 lp to usdt, 2 usdt to lp
+	Type    int // 1 dinar to usdt, 2 usdt to dinar
 	Amount  decimal.Decimal
 	Address string
 	At      int

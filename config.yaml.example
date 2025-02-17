@@ -4,13 +4,12 @@ leo:
   rpc: https://api.explorer.provable.com/v1
   net: testnet
   holder: aleo14s8rn8km6uqwatevtk9qyf6vut0vuce398ghklqggmvrfskr7cxsrx5p7a
-  holder_pk : 
+  holder_pk :
 bsc:
   rpc: https://bsc-testnet-rpc.publicnode.com
   chain_id: 97
   usdt: 0xd851D918C4970F91453f5Cf50CD59e6f38aE6D5b
-  lp: 0xD856fEc774FA5E7CA8561DE9ef852cb0D94AFE77
-  income: 0x___
+  dinar: 0xD856fEc774FA5E7CA8561DE9ef852cb0D94AFE77
   loan_contract: 0xe1354798516b08D65160CA5CB2C409b166699013
   caller:
 service:

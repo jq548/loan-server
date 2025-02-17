@@ -31,5 +31,4 @@ func NewRouter(
 func (myRouter *Router) LoadRouters(engine *gin.Engine) {
 	myRouter.loadLeoRouters(engine)
 	myRouter.loadBscRouters(engine)
-	myRouter.loadAdminRouters(engine)
 }

@@ -39,6 +39,11 @@ type LeoResLoan struct {
 	ReleaseAleoAt     int             `json:"release_aleo_at"`
 	ReleaseAleoAmount string          `json:"release_aleo_amount"`
 	Deposits          []LeoResDeposit `json:"deposits"`
+	DepositAmount     string          `json:"deposit_amount"`
+	DepositPrice      string          `json:"deposit_price"`
+	ValueWhenDeposit  string          `json:"value_when_deposit"`
+	ValueCurrent      string          `json:"value_current"`
+	Contract          string          `json:"contract"`
 }
 
 type LeoResDeposit struct {

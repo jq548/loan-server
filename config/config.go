@@ -30,8 +30,7 @@ type Bsc struct {
 	Rpc          string `yaml:"rpc"`           // RPC
 	ChainId      int    `yaml:"chain_id"`      //
 	Usdt         string `yaml:"usdt"`          // USDT coin contract
-	Lp           string `yaml:"lp"`            // LP coin contract
-	Income       string `yaml:"income"`        // Income coin contract
+	Dinar        string `yaml:"dinar"`         // DINAR coin contract
 	LoanContract string `yaml:"loan_contract"` // main contract
 	Caller       string `yaml:"caller"`        // caller
 }

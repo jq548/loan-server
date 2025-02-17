@@ -22,7 +22,7 @@ type BscChainService struct {
 	Db                   *db.MyDb
 	LoanContractAddress  string
 	UsdtContractAddress  string
-	LPContractAddress    string
+	DinarContractAddress string
 	lastCheckBlockNumber int64
 	EthClient            *ethclient.Client
 	blockTimeMap         map[int]int
@@ -37,15 +37,15 @@ func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error
 		return nil, err
 	}
 	return &BscChainService{
-		Rpc:                 bsc.Rpc,
-		Db:                  myDb,
-		LoanContractAddress: bsc.LoanContract,
-		UsdtContractAddress: bsc.Usdt,
-		LPContractAddress:   bsc.Lp,
-		EthClient:           client,
-		blockTimeMap:        make(map[int]int),
-		CallerPk:            bsc.Caller,
-		ChainId:             bsc.ChainId,
+		Rpc:                  bsc.Rpc,
+		Db:                   myDb,
+		LoanContractAddress:  bsc.LoanContract,
+		UsdtContractAddress:  bsc.Usdt,
+		DinarContractAddress: bsc.Dinar,
+		EthClient:            client,
+		blockTimeMap:         make(map[int]int),
+		CallerPk:             bsc.Caller,
+		ChainId:              bsc.ChainId,
 	}, nil
 }
 
