@@ -29,9 +29,10 @@ type BscChainService struct {
 	CallerPk             string
 	LeoService           *LeoChainService
 	ChainId              int
+	GateIoConfig         *config.GateIo
 }
 
-func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error) {
+func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb, gateIoConfig *config.GateIo) (*BscChainService, error) {
 	client, err := ethclient.Dial(bsc.Rpc)
 	if err != nil {
 		return nil, err
@@ -46,6 +47,7 @@ func NewBscChainService(bsc *config.Bsc, myDb *db.MyDb) (*BscChainService, error
 		blockTimeMap:         make(map[int]int),
 		CallerPk:             bsc.Caller,
 		ChainId:              bsc.ChainId,
+		GateIoConfig:         gateIoConfig,
 	}, nil
 }
 
@@ -169,7 +171,6 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-				//TODO calculate income of providers
 			case "0x38dcb8e7ce8c7f182d53142ee0fa94a1778cd54eddcc1209f86469e7d3b48733":
 				params, err := filterer.ParseEventPayBack(log)
 				if err != nil {
@@ -197,7 +198,10 @@ func (s *BscChainService) FilterLogs(from, to int64) error {
 				if err != nil {
 					return err
 				}
-				//TODO sold aleo
+				err = s.SaveSoldAleo(uint(int(params.LoanId.Int64())))
+				if err != nil {
+					return err
+				}
 			case "0xa16a887e0d16d473c5a8459cbf20c45ef7f0a282e60e60adcacb455ae31ebb62":
 				params, err := filterer.ParseEventIncreaseLiquidRewardBath(log)
 				if err != nil {

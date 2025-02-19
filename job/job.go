@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 	"loan-server/common/consts"
 	"loan-server/common/utils"
+	"loan-server/config"
 	"loan-server/db"
 	"loan-server/model"
 	"loan-server/service"
@@ -20,14 +21,21 @@ type Job struct {
 	BscService             *service.BscChainService
 	Db                     *db.MyDb
 	PlatformReceiveAddress string
+	MailConfig             *config.GoMail
 }
 
-func NewJob(leoService *service.LeoChainService, bscService *service.BscChainService, db *db.MyDb, platformReceiveAddress string) *Job {
+func NewJob(
+	leoService *service.LeoChainService,
+	bscService *service.BscChainService,
+	db *db.MyDb,
+	platformReceiveAddress string,
+	mail *config.GoMail) *Job {
 	return &Job{
 		LeoService:             leoService,
 		BscService:             bscService,
 		Db:                     db,
 		PlatformReceiveAddress: platformReceiveAddress,
+		MailConfig:             mail,
 	}
 }
 
@@ -417,13 +425,16 @@ func (job *Job) checkClearLoanFinish() {
 }
 
 func (job *Job) sendWarningEmail(loan model.Loan) {
+	if len(loan.Email) == 0 {
+		return
+	}
 	record, err := job.Db.FindSendEmailRecord(loan.ID)
 	if err != nil {
 		zap.S().Error(err)
 		return
 	}
 	if len(record) == 0 {
-		success, err := utils.SendEmail(false, "", "", "", "", 443, loan.Email, "Your loan health is lower than 80%")
+		success, err := utils.SendEmail(false, job.MailConfig.Email, job.MailConfig.Account, job.MailConfig.Password, "smtp.gmail.com", 587, loan.Email, "Your loan health is lower than 80%.")
 		if err != nil {
 			success = false
 		}

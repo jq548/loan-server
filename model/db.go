@@ -29,8 +29,8 @@ type Loan struct {
 	Type              int             // 1
 	Email             string          //
 	BscLoanId         int             // loan id of contract
-	DepositAmount     decimal.Decimal //
-	DepositPrice      decimal.Decimal //
+	DepositAmount     decimal.Decimal // first deposit amount
+	DepositPrice      decimal.Decimal // price of aleo when first deposit
 	LoanAmount        decimal.Decimal // amount of loan
 	ReleaseAt         int             // loan create(release usdt) time
 	ReleaseHash       string          // loan create(release usdt) hash
@@ -203,4 +203,21 @@ type SendEmailRecord struct {
 	LoanId uint
 	Email  string
 	Status int // 0 success, 1 failed
+}
+
+type SoldWithdrawAleo struct {
+	gorm.Model
+	LoanId         uint
+	AleoAddress    string
+	AleoAmount     decimal.Decimal
+	Status         int // 1 create, 2 create order, 3 sold, 4 retrieve, 5 finish on loan contract
+	CreateAt       int
+	CreateOrderAt  int
+	OrderHash      string
+	SoldOrderAt    int
+	UsdtAmount     decimal.Decimal
+	RetrieveAmount decimal.Decimal
+	FeeAmount      decimal.Decimal
+	RetrieveHash   string
+	RetrieveAt     int
 }

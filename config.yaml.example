@@ -25,3 +25,10 @@ log:
   level: debug
 platform:
   receive_address: 0x4332B66D46761476B0A50A2F12EE6a17DaCe7247
+gomail:
+  email:
+  account:
+  password:
+gateio:
+  api_key:
+  secret_key:

@@ -13,6 +13,8 @@ type Config struct {
 	Job      Job      `yaml:"job"`
 	Log      Log      `yaml:"log"`
 	Platform Platform `yaml:"platform"`
+	GoMail   GoMail   `yaml:"gomail"`
+	GateIo   GateIo   `yaml:"gateio"`
 }
 
 type Db struct {
@@ -54,6 +56,17 @@ type Log struct {
 
 type Platform struct {
 	ReceiveAddress string `yaml:"receive_address"`
+}
+
+type GoMail struct {
+	Email    string `yaml:"email"`
+	Account  string `yaml:"account"`
+	Password string `yaml:"password"`
+}
+
+type GateIo struct {
+	SecretKey string `yaml:"secret_key"`
+	ApiKey    string `yaml:"api_key"`
 }
 
 func InitConfig() (*Config, error) {

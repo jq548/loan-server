@@ -31,7 +31,7 @@ func main() {
 
 	ls := service.NewLeoChainService(&cfg.Leo, myDb)
 
-	bs, err := service.NewBscChainService(&cfg.Bsc, myDb)
+	bs, err := service.NewBscChainService(&cfg.Bsc, myDb, &config.GateIo{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -41,7 +41,7 @@ func main() {
 	go bs.StartFetchEvent()
 
 	// ---- start job ----
-	myJob := job.NewJob(ls, bs, myDb, cfg.Platform.ReceiveAddress)
+	myJob := job.NewJob(ls, bs, myDb, cfg.Platform.ReceiveAddress, &cfg.GoMail)
 	myJob.StartJob(cfg.Job.AleoPrice, myJob.StartFetchAleoPrice)
 	myJob.StartJob(cfg.Job.CalculateRate, myJob.StartCalculateRate)
 	myJob.StartJob(cfg.Job.CalculateIncome, myJob.StartCalculateIncome)

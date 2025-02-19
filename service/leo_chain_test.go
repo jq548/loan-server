@@ -25,10 +25,12 @@ var bscService, _ = NewBscChainService(&config.Bsc{
 	97,
 	"0xd851D918C4970F91453f5Cf50CD59e6f38aE6D5b",
 	"0xD856fEc774FA5E7CA8561DE9ef852cb0D94AFE77",
-	"",
 	"0xe1354798516b08D65160CA5CB2C409b166699013",
 	"",
-}, database)
+}, database, &config.GateIo{
+	"",
+	"",
+})
 
 func TestSetContractValue(t *testing.T) {
 	tokenContract, err := contract.NewLoan(common.HexToAddress(bscService.LoanContractAddress), bscService.EthClient)
@@ -85,4 +87,8 @@ func TestProvideLiquid(t *testing.T) {
 		return
 	}
 	fmt.Println(tx.Hash().Hex())
+}
+
+func TestBscChainService_SoldAleo(t *testing.T) {
+	bscService.SoldAleo(1)
 }
