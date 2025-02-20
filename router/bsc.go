@@ -265,6 +265,10 @@ func bscLoanList(myRouter *Router) gin.HandlerFunc {
 				ValueWhenDeposit = ValueWhenDeposit.Add(d.UsdtValue.Div(decimal.NewFromInt(consts.Wei)))
 				ValueCurrent = ValueWhenDeposit.Add(d.AleoAmount.Div(decimal.NewFromInt(1000000)).Mul(decimal.NewFromFloat(price)))
 			}
+			minRecharge := decimal.Zero
+			if loan.Health.LessThan(decimal.NewFromInt(1)) {
+				minRecharge = ValueWhenDeposit.Sub(ValueCurrent).Div(decimal.NewFromInt(consts.Wei)).Div(decimal.NewFromFloat(price))
+			}
 			resLoans = append(resLoans, model.LeoResLoan{
 				ID:                int(loan.ID),
 				AleoAddress:       loan.AleoAddress,
@@ -295,6 +299,7 @@ func bscLoanList(myRouter *Router) gin.HandlerFunc {
 				Contract:          loan.Contract,
 				ValueCurrent:      ValueCurrent.String(),
 				ValueWhenDeposit:  ValueWhenDeposit.String(),
+				MinRecharge:       minRecharge.String(),
 			})
 		}
 		success := res.Success(resLoans)

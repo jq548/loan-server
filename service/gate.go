@@ -159,3 +159,24 @@ func (s *BscChainService) checkWithdraw() {
 		fmt.Println(response)
 	}
 }
+
+func (s *BscChainService) FetchAleoPrice() {
+	client := s.getGateApiClient()
+	ctx := s.getGateApiCtx()
+
+	listCandlesticksOpts := gateapi.ListCandlesticksOpts{
+		Limit: optional.NewInt32(int32(1)),
+	}
+
+	result, response, err := client.SpotApi.ListCandlesticks(ctx, "ALEO_USDT", &listCandlesticksOpts)
+	if err != nil {
+		if e, ok := err.(gateapi.GateAPIError); ok {
+			fmt.Printf("gate api error: %s\n", e.Error())
+		} else {
+			fmt.Printf("generic error: %s\n", err.Error())
+		}
+	} else {
+		fmt.Println(result)
+		fmt.Println(response)
+	}
+}

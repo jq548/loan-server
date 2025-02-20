@@ -38,7 +38,7 @@ func TestSetContractValue(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	opts, err := bscService.GetTransactOpts("c4698e08f86bea243f5c5f08ef37ce883b51437e6a34e7922f25cf55fd32add0")
+	opts, err := bscService.GetTransactOpts("")
 	if err != nil {
 		t.Error(err)
 		return
@@ -57,7 +57,7 @@ func TestApprove(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	opts, err := bscService.GetTransactOpts("841e60745df7d8e47526dd9725eec9ad6594863549ab653a57d3e93aa095d99f")
+	opts, err := bscService.GetTransactOpts("")
 	if err != nil {
 		t.Error(err)
 		return
@@ -76,7 +76,7 @@ func TestProvideLiquid(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	opts, err := bscService.GetTransactOpts("841e60745df7d8e47526dd9725eec9ad6594863549ab653a57d3e93aa095d99f")
+	opts, err := bscService.GetTransactOpts("")
 	if err != nil {
 		t.Error(err)
 		return
@@ -90,5 +90,5 @@ func TestProvideLiquid(t *testing.T) {
 }
 
 func TestBscChainService_SoldAleo(t *testing.T) {
-	bscService.SoldAleo(1)
+	bscService.FetchAleoPrice()
 }

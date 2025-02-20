@@ -44,6 +44,7 @@ type LeoResLoan struct {
 	ValueWhenDeposit  string          `json:"value_when_deposit"`
 	ValueCurrent      string          `json:"value_current"`
 	Contract          string          `json:"contract"`
+	MinRecharge       string          `json:"min_recharge"`
 }
 
 type LeoResDeposit struct {

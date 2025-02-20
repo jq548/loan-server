@@ -148,17 +148,18 @@ func saveDeposit(myRouter *Router) gin.HandlerFunc {
 		if !utils.IsValidLeoAddress(params.AleoAddress) {
 			panic(errors.New(errors.ParameterError))
 		}
-		if params.LoanType != 1 {
-			panic(errors.New(errors.ParameterError))
-		}
 		if params.Type < 0 || params.Type > 2 {
 			panic(errors.New(errors.ParameterError))
 		}
 		intAmount := int64(params.AleoAmount * 1000000)
-		if config.MinLoanAmount > intAmount || config.MaxLoanAmount < intAmount {
-			panic(errors.New(errors.ParameterError))
-		}
+
 		if params.Type == 0 {
+			if params.LoanType != 1 {
+				panic(errors.New(errors.ParameterError))
+			}
+			if config.MinLoanAmount > intAmount || config.MaxLoanAmount < intAmount {
+				panic(errors.New(errors.ParameterError))
+			}
 			if !utils.IsValidAddress(params.BscAddress) {
 				panic(errors.New(errors.ParameterError))
 			}
@@ -238,6 +239,10 @@ func leoLoanList(myRouter *Router) gin.HandlerFunc {
 				ValueWhenDeposit = ValueWhenDeposit.Add(d.UsdtValue.Div(decimal.NewFromInt(consts.Wei)))
 				ValueCurrent = ValueWhenDeposit.Add(d.AleoAmount.Div(decimal.NewFromInt(1000000)).Mul(decimal.NewFromFloat(price)))
 			}
+			minRecharge := decimal.Zero
+			if loan.Health.LessThan(decimal.NewFromInt(1)) {
+				minRecharge = ValueWhenDeposit.Sub(ValueCurrent).Div(decimal.NewFromInt(consts.Wei)).Div(decimal.NewFromFloat(price))
+			}
 			resLoans = append(resLoans, model.LeoResLoan{
 				ID:                int(loan.ID),
 				AleoAddress:       loan.AleoAddress,
@@ -268,6 +273,7 @@ func leoLoanList(myRouter *Router) gin.HandlerFunc {
 				Contract:          loan.Contract,
 				ValueCurrent:      ValueCurrent.String(),
 				ValueWhenDeposit:  ValueWhenDeposit.String(),
+				MinRecharge:       minRecharge.String(),
 			})
 		}
 		success := res.Success(resLoans)
