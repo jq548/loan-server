@@ -122,8 +122,8 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 				newRecord := model.BscProvideRecord{
 					Days:           income.Duration / 24 / 3600,
 					Amount:         income.Amount.Div(decimal.NewFromInt(consts.Wei)).String(),
-					RateYear:       decimal.NewFromFloat(getFactorOfDay(income.Duration / 24 / 3600)).Mul(rate).String(),
-					TotalIncomeDec: income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei)),
+					RateYear:       decimal.NewFromFloat(getFactorOfDay(income.Duration / 24 / 3600)).Mul(rate).RoundDown(4).String(),
+					TotalIncomeDec: income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4),
 					Duration:       income.Duration,
 					Start:          income.Start,
 					Status:         income.Status,
@@ -135,7 +135,7 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 					RecordId:       income.RecordId,
 				}
 				if income.CreateAt < int(beginOfToday) && income.CreateAt > int(beginOfToday)-3600*24 {
-					newRecord.YesterdayIncomeDec = income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei))
+					newRecord.YesterdayIncomeDec = income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4)
 				}
 				records = append(records, newRecord)
 			} else {
@@ -158,9 +158,9 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 			}
 		}
 		BscProvideInfo := model.BscProvideInfo{
-			TotalProvide:    totalProvide.Div(decimal.NewFromInt(consts.Wei)).String(),
-			Income30:        income30.Div(decimal.NewFromInt(consts.Wei)).String(),
-			IncomeYesterday: incomeYesterday.Div(decimal.NewFromInt(consts.Wei)).String(),
+			TotalProvide:    totalProvide.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4).String(),
+			Income30:        income30.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4).String(),
+			IncomeYesterday: incomeYesterday.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4).String(),
 			ProvideRecord:   records,
 		}
 		success := res.Success(BscProvideInfo)
