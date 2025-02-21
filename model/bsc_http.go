@@ -36,6 +36,8 @@ type BscProvideRecord struct {
 	YesterdayIncomeDec decimal.Decimal `json:"yesterday_income_dec"`
 	IncomeStartDay     string          `json:"income_start_day"`
 	IncomeEndDay       string          `json:"income_end_day"`
+	EstimatedFee       decimal.Decimal `json:"estimated_fee"`
+	FeeRate            float64         `json:"fee_rate"`
 }
 
 type BscProvideRewardRecord struct {

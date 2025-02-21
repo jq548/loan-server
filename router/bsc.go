@@ -119,6 +119,12 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 				}
 			}
 			if index == -1 {
+				estimatedFee := decimal.Zero
+				feeRate := 0.0
+				if int(time.Now().Unix()) < income.Start+income.Duration {
+					feeRate = 0.03
+					estimatedFee = income.Amount.Div(decimal.NewFromInt(consts.Wei)).Mul(decimal.NewFromFloat(0.03)).RoundDown(4)
+				}
 				newRecord := model.BscProvideRecord{
 					Days:           income.Duration / 24 / 3600,
 					Amount:         income.Amount.Div(decimal.NewFromInt(consts.Wei)).String(),
@@ -133,6 +139,8 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 					RetrieveAt:     income.RetrieveAt,
 					RetrieveHash:   income.RetrieveHash,
 					RecordId:       income.RecordId,
+					FeeRate:        feeRate,
+					EstimatedFee:   estimatedFee,
 				}
 				if income.CreateAt < int(beginOfToday) && income.CreateAt > int(beginOfToday)-3600*24 {
 					newRecord.YesterdayIncomeDec = income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei))
@@ -185,7 +193,7 @@ func provideIncomeReleaseRecord(myRouter *Router) gin.HandlerFunc {
 		for _, income := range incomes {
 			records = append(records, model.BscProvideRewardRecord{
 				Provider: income.Provider,
-				Amount:   income.Amount.Div(decimal.NewFromInt(consts.Wei)).String(),
+				Amount:   income.Amount.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4).String(),
 				Hash:     income.Hash,
 				At:       income.At,
 			})

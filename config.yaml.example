@@ -8,9 +8,9 @@ leo:
 bsc:
   rpc: https://bsc-testnet-rpc.publicnode.com
   chain_id: 97
-  usdt: 0xd851D918C4970F91453f5Cf50CD59e6f38aE6D5b
-  dinar: 0xD856fEc774FA5E7CA8561DE9ef852cb0D94AFE77
-  loan_contract: 0xe1354798516b08D65160CA5CB2C409b166699013
+  usdt: 0x848be47C7514084B4950EC8345F4041D7B7dCb47
+  dinar: 0x6517763013fF1C472039c21c3Cf0b2645A8cdc45
+  loan_contract: 0x15dD7A4580A0523215bB1ae8B00f1Aa4D93ae308
   caller:
 service:
   port: 8899
