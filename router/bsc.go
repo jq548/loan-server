@@ -135,7 +135,7 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 					RecordId:       income.RecordId,
 				}
 				if income.CreateAt < int(beginOfToday) && income.CreateAt > int(beginOfToday)-3600*24 {
-					newRecord.YesterdayIncomeDec = income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei)).RoundDown(4)
+					newRecord.YesterdayIncomeDec = income.IncomeAmount.Div(decimal.NewFromInt(consts.Wei))
 				}
 				records = append(records, newRecord)
 			} else {
@@ -146,8 +146,8 @@ func provideRecord(myRouter *Router) gin.HandlerFunc {
 			}
 		}
 		for i, _ := range records {
-			records[i].TotalIncome = records[i].TotalIncomeDec.String()
-			records[i].YesterdayIncome = records[i].YesterdayIncomeDec.String()
+			records[i].TotalIncome = records[i].TotalIncomeDec.RoundDown(4).String()
+			records[i].YesterdayIncome = records[i].YesterdayIncomeDec.RoundDown(4).String()
 			createAt := time.Unix(int64(records[i].CreateAt), 0)
 			records[i].IncomeStartDay = createAt.Format("2006-01-02")
 			if records[i].Status == 1 {
