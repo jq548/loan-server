@@ -125,11 +125,13 @@ func (job *Job) StartCalculateIncome() {
 	if err != nil {
 		zap.S().Error(err)
 	}
-	ids = append(ids, big.NewInt(0))
-	idsInt = append(idsInt, 0)
-	addresses = append(addresses, job.PlatformReceiveAddress)
-	amounts = append(amounts, platformIncome.BigInt())
-	amountsStr = append(amountsStr, platformIncome.String())
+	if platformIncome.GreaterThan(decimal.Zero) {
+		ids = append(ids, big.NewInt(0))
+		idsInt = append(idsInt, 0)
+		addresses = append(addresses, job.PlatformReceiveAddress)
+		amounts = append(amounts, platformIncome.BigInt())
+		amountsStr = append(amountsStr, platformIncome.String())
+	}
 	providerIncome, err := job.Db.TotalIncomeLastDay(false)
 	if err != nil {
 		zap.S().Error(err)
@@ -147,40 +149,44 @@ func (job *Job) StartCalculateIncome() {
 		if !totalLiquid.Equal(decimal.Zero) {
 			amount = p.Amount.Div(totalLiquid).Mul(providerIncome)
 		}
-		ids = append(ids, big.NewInt(int64(p.RecordId)))
-		idsInt = append(idsInt, p.RecordId)
-		addresses = append(addresses, p.Provider)
-		amounts = append(amounts, amount.BigInt())
-		amountsStr = append(amountsStr, amount.String())
+		if amount.GreaterThan(decimal.Zero) {
+			ids = append(ids, big.NewInt(int64(p.RecordId)))
+			idsInt = append(idsInt, p.RecordId)
+			addresses = append(addresses, p.Provider)
+			amounts = append(amounts, amount.BigInt())
+			amountsStr = append(amountsStr, amount.String())
+		}
 	}
 
-	status := 1
-	hash, err := job.BscService.IncreaseIncome(ids, addresses, amounts)
-	if err != nil {
-		zap.S().Error(err)
-		status = 2
-	}
-	idsjson, err := json.Marshal(ids)
-	if err != nil {
-		zap.S().Error(err)
-	}
-	addressesjson, err := json.Marshal(addresses)
-	if err != nil {
-		zap.S().Error(err)
-	}
-	amountsjson, err := json.Marshal(amountsStr)
-	if err != nil {
-		zap.S().Error(err)
-	}
-	err = job.Db.NewIncomeGenerateRecord(
-		int(time.Now().Unix()),
-		status,
-		hash,
-		string(idsjson),
-		string(addressesjson),
-		string(amountsjson))
-	if err != nil {
-		zap.S().Error(err)
+	if len(ids) > 0 {
+		status := 1
+		hash, err := job.BscService.IncreaseIncome(ids, addresses, amounts)
+		if err != nil {
+			zap.S().Error(err)
+			status = 2
+		}
+		idsjson, err := json.Marshal(ids)
+		if err != nil {
+			zap.S().Error(err)
+		}
+		addressesjson, err := json.Marshal(addresses)
+		if err != nil {
+			zap.S().Error(err)
+		}
+		amountsjson, err := json.Marshal(amountsStr)
+		if err != nil {
+			zap.S().Error(err)
+		}
+		err = job.Db.NewIncomeGenerateRecord(
+			int(time.Now().Unix()),
+			status,
+			hash,
+			string(idsjson),
+			string(addressesjson),
+			string(amountsjson))
+		if err != nil {
+			zap.S().Error(err)
+		}
 	}
 }
 
